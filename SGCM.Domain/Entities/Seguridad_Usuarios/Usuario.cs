@@ -1,8 +1,10 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
+    [Table("Usuarios")]
     public class Usuario : BaseEntity
     {
         public string Email { get; private set; }

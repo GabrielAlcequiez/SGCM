@@ -1,8 +1,10 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
+    [Table("Auditoria_Logs")]
     public class AuditoriaLogs : BaseEntity
     {
         public int UsuarioId { get; private set; }

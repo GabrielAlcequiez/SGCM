@@ -1,8 +1,10 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Pacientes
 {
+    [Table("Pacientes")]
     public class Paciente : BaseEntity
     {
         public string Nombre { get; private set; }
