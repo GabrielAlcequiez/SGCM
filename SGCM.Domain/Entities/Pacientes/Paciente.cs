@@ -10,20 +10,20 @@ namespace SGCM.Domain.Entities.Pacientes
         public string Telefono { get; private set; }
         public string Direccion { get; private set; }
         public DateOnly FechaNacimiento { get; private set; }
-
-        public string? SeguroMedico { get; private set; }
+            
+        public int? ProveedorId{ get; private set; }
         public string? NSS { get; private set; }
         public int UsuarioId { get; private set; }
 
 
-        public Paciente(string nombre, string apellido, string telefono, string direccion, DateOnly fechaNacimiento, string? seguroMedico, string? nss, int usuarioid)
+        public Paciente(string nombre, string apellido, string telefono, string direccion, DateOnly fechaNacimiento, int? proveedorId, string? nss, int usuarioid)
         {
             Nombre = nombre;
             Apellido = apellido;
             Telefono = telefono;
             Direccion = direccion;
             FechaNacimiento = fechaNacimiento;
-            SeguroMedico = seguroMedico;
+            ProveedorId = proveedorId;
             NSS = nss;
             UsuarioId = usuarioid;
             ValidarEntradaDatos();
