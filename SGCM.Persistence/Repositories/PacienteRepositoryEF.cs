@@ -2,7 +2,6 @@
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
-using SGCM.Domain.Services.Interfaces.IPacientes;
 using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories

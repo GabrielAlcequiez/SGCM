@@ -1,10 +1,10 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using SGCM.Domain.Repository;
 
 namespace SGCM.Domain.Entities.Pacientes
 {
-    public class Proveedores : BaseEntity
+    public class Proveedores : BaseEntity, IAggregateRoot
     {
         public string Nombre { get; private set; }
         public string RNC { get; private set; }
