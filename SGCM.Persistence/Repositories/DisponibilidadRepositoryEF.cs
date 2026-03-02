@@ -7,7 +7,7 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    internal class DisponibilidadRepositoryEF : IDisponibilidadRepository, IUnitOfWorkRepository
+    public sealed class DisponibilidadRepositoryEF : IDisponibilidadRepository, IUnitOfWorkRepository
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
