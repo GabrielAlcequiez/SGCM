@@ -1,10 +1,11 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace SGCM.Domain.Entities.Citas_Agenda
 {
-    public class Citas : BaseEntity
+    public class Citas : BaseEntity, IAggregateRoot
     {
         public DateTime FechaHora { get; private set; }
         public int Estado { get; private set; }
