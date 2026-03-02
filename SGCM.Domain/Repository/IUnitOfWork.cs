@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SGCM.Domain.Repository
+﻿namespace SGCM.Domain.Repository
 {
-    internal interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
+        void RegistrarNuevo(IAggregateRoot entity, IUnitOfWorkRepository repository);
+         void RegistrarAmended(IAggregateRoot entity, IUnitOfWorkRepository repository);
+       void RegistrarEliminado(IAggregateRoot entity, IUnitOfWorkRepository repository);
+        Task Commit(); 
     }
 }
