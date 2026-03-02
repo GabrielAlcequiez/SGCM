@@ -1,11 +1,12 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Medicos
 {
     [Table("Medicos")]
-    public class Medico : BaseEntity
+    public class Medico : BaseEntity, IAggregateRoot
     {
         public string Nombre { get; private set; }
         public string Apellido { get; private set; }
