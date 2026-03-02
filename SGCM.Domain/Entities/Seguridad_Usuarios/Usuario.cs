@@ -1,11 +1,12 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
     [Table("Usuarios")]
-    public class Usuario : BaseEntity
+    public class Usuario : BaseEntity, IAggregateRoot
     {
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
