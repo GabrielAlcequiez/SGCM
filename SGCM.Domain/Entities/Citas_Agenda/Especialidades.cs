@@ -1,8 +1,9 @@
 ﻿using SGCM.Domain.Base;
+using SGCM.Domain.Repository;
 
 namespace SGCM.Domain.Entities.Medicos
 {
-    public class Especialidades : BaseEntity
+    public class Especialidades : BaseEntity, IAggregateRoot
     {
         public string Nombre { get; private set; }
         public string Descripcion { get; private set; }
