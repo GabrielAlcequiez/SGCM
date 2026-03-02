@@ -50,7 +50,7 @@ namespace SGCM.Persistence.Repositories
             var paciente = await ObtenerPorIdAsync(id);
             if (paciente == null)
             {
-                throw new ExcepcionValidacion($"Paciente con id {id} no encontrado.");
+                throw new ExcepcionNoEncontrado("Paciente", id);
             }
             _unitOfWork.RegistrarEliminado(paciente, this);
         }
