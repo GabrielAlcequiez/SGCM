@@ -1,10 +1,10 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using SGCM.Domain.Repository;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
-    public class Administradores : BaseEntity
+    public class Administradores : BaseEntity, IAggregateRoot
     {
         public string Nombre { get; private set; }
         public string Apellido { get; private set; }

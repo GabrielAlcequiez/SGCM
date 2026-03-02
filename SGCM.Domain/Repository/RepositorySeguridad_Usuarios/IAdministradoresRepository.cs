@@ -5,6 +5,5 @@ namespace SGCM.Domain.Repository
 {
     public interface IAdministradoresRepository : IBaseRepository<Administradores>
     {
-        Task<Administradores?> ObtenerPorUsuarioIdAsync(int usuarioId);
     }
 }
