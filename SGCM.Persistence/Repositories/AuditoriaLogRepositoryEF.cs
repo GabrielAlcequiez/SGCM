@@ -6,34 +6,32 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class AuditoriaLogRepositoryEF : IAuditoriaLogsRepository, IUnitOfWorkRepository
+    public sealed class AuditoriaLogRepositoryEF : IAuditoriaLogsRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly SGCMContext _context;
-        public AuditoriaLogRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _context = context;
-            _unitOfWork = unitOfWork;
-        }
 
+        private readonly SGCMContext _context;
+        public AuditoriaLogRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
+            _context = context;
+        
+       
         #region Metodos de Registro
 
         public Task ActualizarAsync(AuditoriaLogs entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.AuditoriaLogs.Update(entidad);
             return Task.CompletedTask;
         }
         public Task AgregarAsync(AuditoriaLogs entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+            _context.AuditoriaLogs.Add(entidad);
             return Task.CompletedTask;
         }
         public async Task EliminarAsync(int id)
         {
             var log = await ObtenerPorIdAsync(id);
-            if (log == null)
+            if (log is null)
                 throw new ExcepcionNoEncontrado("Auditoria_Logs", id);
-            _unitOfWork.RegistrarEliminado(log, this);
+            _context.AuditoriaLogs.Remove(log);
         }
 
         #endregion
@@ -51,19 +49,6 @@ namespace SGCM.Persistence.Repositories
 
         public async Task<IEnumerable<AuditoriaLogs>> ObtenerPorRangoFechasAsync(DateTime inicio, DateTime fin) =>
             await _context.AuditoriaLogs.Where(a => a.Fecha >= inicio && a.Fecha <= fin).ToListAsync();
-
-        #endregion
-
-        #region Metodos de Persistencia
-
-        public void PersistirCreacion(IAggregateRoot entity) =>
-            _context.AuditoriaLogs.Add((AuditoriaLogs)entity);
-
-        public void PersistirModificacion(IAggregateRoot entity) =>
-            _context.AuditoriaLogs.Update((AuditoriaLogs)entity);
-
-        public void PersistirEliminacion(IAggregateRoot entity) =>
-            _context.AuditoriaLogs.Remove((AuditoriaLogs)entity);
 
         #endregion
     }

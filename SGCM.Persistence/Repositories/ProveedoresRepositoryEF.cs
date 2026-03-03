@@ -6,16 +6,13 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class ProveedoresRepositoryEF : IProveedoresRepository, IUnitOfWorkRepository
+    public sealed class ProveedoresRepositoryEF : IProveedoresRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
 
-        public ProveedoresRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _unitOfWork = unitOfWork;
+        public ProveedoresRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
             _context = context;
-        }
+        
 
         #region Metodos de Consulta
 
@@ -38,50 +35,28 @@ namespace SGCM.Persistence.Repositories
 
         #endregion
 
-
-
         #region Metodos de Registro
 
         public Task ActualizarAsync(Proveedores entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.Proveedores.Update(entidad);
             return Task.CompletedTask;
         }
 
         public Task AgregarAsync(Proveedores entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+            _context.Proveedores.Add(entidad);
             return Task.CompletedTask;
         }
 
         public async Task EliminarAsync(int id)
         {
             var proveedor = await ObtenerPorIdAsync(id);
-            if (proveedor == null)
+            if (proveedor is null)
             {
                 throw new ExcepcionNoEncontrado("Proveedores", id);
             }
-            _unitOfWork.RegistrarEliminado(proveedor, this);
-        }
-
-        #endregion
-
-
-        #region Metodos de Persistencia
-
-        public void PersistirCreacion(IAggregateRoot entity)
-        {
-            _context.Proveedores.Add((Proveedores)entity);
-        }
-
-        public void PersistirEliminacion(IAggregateRoot entity)
-        {
-            _context.Proveedores.Remove((Proveedores)entity);
-        }
-
-        public void PersistirModificacion(IAggregateRoot entity)
-        {
-            _context.Proveedores.Update((Proveedores)entity);
+            _context.Proveedores.Remove(proveedor);
         }
 
         #endregion

@@ -1,6 +1,5 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
-using SGCM.Domain.Repository;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace SGCM.Domain.Entities.Citas_Agenda

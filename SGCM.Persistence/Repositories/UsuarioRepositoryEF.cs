@@ -6,40 +6,37 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class UsuarioRepositoryEF : IUsuarioRepository, IUnitOfWorkRepository
+    public sealed class UsuarioRepositoryEF : IUsuarioRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
 
-        public UsuarioRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _unitOfWork = unitOfWork;
+        public UsuarioRepositoryEF(SGCMContext context) =>
             _context = context;
-        }
+        
 
         #region Metodos de Registro
 
         public Task ActualizarAsync(Usuario entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.Usuarios.Update(entidad);
             return Task.CompletedTask;
         }
 
 
         public Task AgregarAsync(Usuario entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+            _context.Usuarios.Add(entidad);
             return Task.CompletedTask;
         }
 
         public async Task EliminarAsync(int id)
         {
             var usuario = await ObtenerPorIdAsync(id);
-            if(usuario == null)
+            if(usuario is null)
             {
                 throw new ExcepcionNoEncontrado("Usuario", id);
             }
-            _unitOfWork.RegistrarEliminado(usuario, this);
+            _context.Usuarios.Remove(usuario);
 
         }
 
@@ -65,28 +62,5 @@ namespace SGCM.Persistence.Repositories
 
 
         #endregion
-
-
-        #region Metodos de Persistencia
-
-        public void PersistirCreacion(IAggregateRoot entity)
-        {
-            _context.Usuarios.Add((Usuario)entity);
-        }
-
-        public void PersistirEliminacion(IAggregateRoot entity)
-        {
-           _context.Usuarios.Remove((Usuario)entity);
-        }
-
-        public void PersistirModificacion(IAggregateRoot entity)
-        {
-            _context.Usuarios.Update((Usuario)entity);
-        }
-
-        #endregion
-
-
-
     }
 }

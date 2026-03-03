@@ -7,34 +7,31 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class DisponibilidadRepositoryEF : IDisponibilidadRepository, IUnitOfWorkRepository
+    public sealed class DisponibilidadRepositoryEF : IDisponibilidadRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
 
-        public DisponibilidadRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _unitOfWork = unitOfWork;
+        public DisponibilidadRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
             _context = context;
-        }
+        
 
         #region Metodos de Registro
         public Task ActualizarAsync(Disponibilidad entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.Disponibilidad.Update(entidad);
             return Task.CompletedTask;
         }
         public Task AgregarAsync(Disponibilidad entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+            _context.Disponibilidad.Add(entidad);
             return Task.CompletedTask;
         }
         public async Task EliminarAsync(int id)
         {
             var disponibilidad = await ObtenerPorIdAsync(id);
-            if (disponibilidad == null)
+            if (disponibilidad is null)
                 throw new ExcepcionNoEncontrado("Disponibilidad", id);
-            _unitOfWork.RegistrarEliminado(disponibilidad, this);
+            _context.Disponibilidad.Remove(disponibilidad);
         }
         #endregion
 
@@ -52,15 +49,5 @@ namespace SGCM.Persistence.Repositories
             await _context.Disponibilidad.FirstOrDefaultAsync(d => d.MedicoId == medicoId && d.DiaSemana == diaSemana);
         #endregion
 
-        #region Metodos de Persistencia
-        public void PersistirCreacion(IAggregateRoot entity) =>
-            _context.Disponibilidad.Add((Disponibilidad)entity);
-
-        public void PersistirModificacion(IAggregateRoot entity) =>
-            _context.Disponibilidad.Update((Disponibilidad)entity);
-
-        public void PersistirEliminacion(IAggregateRoot entity) =>
-            _context.Disponibilidad.Remove((Disponibilidad)entity);
-        #endregion
     }
 }

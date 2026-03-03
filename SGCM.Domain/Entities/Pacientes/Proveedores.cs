@@ -1,6 +1,5 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
-using SGCM.Domain.Repository;
 
 namespace SGCM.Domain.Entities.Pacientes
 {

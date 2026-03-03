@@ -4,39 +4,35 @@ using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Persistence.Context;
-using System.Data;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class EspecialidadesRepositoryEF : IEspecialidadesRepository, IUnitOfWorkRepository
+    public sealed class EspecialidadesRepositoryEF : IEspecialidadesRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
-        public EspecialidadesRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _unitOfWork = unitOfWork;
+        public EspecialidadesRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
             _context = context;
-        }
+        
 
         #region Metodos de Registro
         public Task ActualizarAsync(Especialidades entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.Especialidades.Update(entidad);
             return Task.CompletedTask;
         }
 
         public Task AgregarAsync(Especialidades entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+           _context.Especialidades.Add(entidad);
             return Task.CompletedTask;
         }
 
         public async Task EliminarAsync(int id)
         {
             var especialidad = await _context.Especialidades.FindAsync(id);
-            if (especialidad == null)
+            if (especialidad is null)
                 throw new ExcepcionNoEncontrado("Especialidades", id);
-            _unitOfWork.RegistrarEliminado(especialidad, this);
+            _context.Especialidades.Remove(especialidad);
         }
 
         #endregion
@@ -55,25 +51,5 @@ namespace SGCM.Persistence.Repositories
 
         #endregion
 
-
-        #region Metodos de Persistencia
-
-        public void PersistirCreacion(IAggregateRoot entity)
-        {
-            _context.Especialidades.Add((Especialidades)entity);
-        }
-
-        public void PersistirEliminacion(IAggregateRoot entity)
-        {
-            _context.Especialidades.Remove((Especialidades)entity);
-        }
-
-        public void PersistirModificacion(IAggregateRoot entity)
-        {
-            _context.Especialidades.Update((Especialidades)entity);
-        }
-
-
-        #endregion
     }
 }

@@ -36,7 +36,7 @@ namespace SGCM.Domain.Services
             }
 
 
-            var perfilExistente = await _administradoresRepository.ObtenerPorUsuarioIdAsync(usuarioId);
+            var perfilExistente = await _administradoresRepository.ObtenerPorIdAsync(usuarioId);
             if (perfilExistente != null)
             {
                 throw new ExcepcionReglaNegocio(

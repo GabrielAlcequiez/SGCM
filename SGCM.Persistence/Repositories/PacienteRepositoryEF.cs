@@ -6,16 +6,13 @@ using SGCM.Persistence.Context;
 
 namespace SGCM.Persistence.Repositories
 {
-    public sealed class PacienteRepositoryEF : IPacienteRepository, IUnitOfWorkRepository
+    public sealed class PacienteRepositoryEF : IPacienteRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly SGCMContext _context;
 
-        public PacienteRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context)
-        {
-            _unitOfWork = unitOfWork;
+        public PacienteRepositoryEF(SGCMContext context) =>
             _context = context;
-        }
+        
 
         #region Metodos de Consulta
         public async Task<IEnumerable<Paciente>> ObtenerPorApellidoAsync(string apellido) => await _context.Pacientes.Where(p => p.Apellido.Contains(apellido)).ToListAsync();
@@ -33,13 +30,13 @@ namespace SGCM.Persistence.Repositories
 
         public Task ActualizarAsync(Paciente entidad)
         {
-            _unitOfWork.RegistrarAmended(entidad, this);
+            _context.Pacientes.Update(entidad);
             return Task.CompletedTask;
         }
 
         public Task AgregarAsync(Paciente entidad)
         {
-            _unitOfWork.RegistrarNuevo(entidad, this);
+            _context.Pacientes.Add(entidad);
             return Task.CompletedTask;
         }
 
@@ -47,35 +44,14 @@ namespace SGCM.Persistence.Repositories
         {
             // Pendiente de implementar soft delete (hard delete actualmente)
             var paciente = await ObtenerPorIdAsync(id);
-            if (paciente == null)
+            if (paciente is null)
             {
                 throw new ExcepcionNoEncontrado("Paciente", id);
             }
-            _unitOfWork.RegistrarEliminado(paciente, this);
+            _context.Pacientes.Remove(paciente);
         }
 
 
         #endregion
-
-        #region Metodos de Persistencia
-
-        public void PersistirCreacion(IAggregateRoot entity)
-        {
-            _context.Pacientes.Add((Paciente)entity);
-        }
-
-        public void PersistirEliminacion(IAggregateRoot entity)
-        {
-            _context.Pacientes.Remove((Paciente)entity);
-        }
-
-        public void PersistirModificacion(IAggregateRoot entity)
-        {
-            _context.Pacientes.Update((Paciente)entity);
-        }
-
-
-        #endregion
-    
     }
 }

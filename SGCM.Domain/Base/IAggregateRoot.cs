@@ -1,4 +1,4 @@
-﻿namespace SGCM.Domain.Repository
+﻿namespace SGCM.Domain.Base
 {
     public interface IAggregateRoot
     {
