@@ -10,15 +10,14 @@ namespace SGCM.Domain.Entities.Pacientes
         public string Telefono { get; private set; }
         public decimal CoberturaDefault { get; private set; }
 
+        private Proveedores() { }
         public Proveedores(string nombre, string rnc, string telefono, decimal coberturaDefault)
         {
-
             Nombre = nombre;
             RNC = rnc;
             Telefono = telefono;
             CoberturaDefault = coberturaDefault;
             ValidarEntradaDatos();
-
         }
 
         protected override void ValidarEntradaDatos()

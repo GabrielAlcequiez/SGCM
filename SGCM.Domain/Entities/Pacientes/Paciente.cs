@@ -12,13 +12,15 @@ namespace SGCM.Domain.Entities.Pacientes
         public string Telefono { get; private set; }
         public string Direccion { get; private set; }
         public DateOnly FechaNacimiento { get; private set; }
-            
-        public int? ProveedorId{ get; private set; }
+
+        public int? ProveedorId { get; private set; }
         public string? NSS { get; private set; }
         public int UsuarioId { get; private set; }
 
+        private Paciente() { }
 
-        public Paciente(string nombre, string apellido, string telefono, string direccion, DateOnly fechaNacimiento, int? proveedorId, string? nss, int usuarioid)
+        public Paciente(string nombre, string apellido, string telefono, string direccion,
+            DateOnly fechaNacimiento, int? proveedorId, string? nss, int usuarioId)
         {
             Nombre = nombre;
             Apellido = apellido;
@@ -27,7 +29,7 @@ namespace SGCM.Domain.Entities.Pacientes
             FechaNacimiento = fechaNacimiento;
             ProveedorId = proveedorId;
             NSS = nss;
-            UsuarioId = usuarioid;
+            UsuarioId = usuarioId;
             ValidarEntradaDatos();
         }
 

@@ -1,4 +1,10 @@
 
+using Microsoft.EntityFrameworkCore;
+using SGCM.Domain.Entities.Pacientes;
+using SGCM.Domain.Repository;
+using SGCM.Persistence.Context;
+using SGCM.Persistence.Repositories;
+
 namespace SGCM.API
 {
     public class Program
@@ -6,6 +12,12 @@ namespace SGCM.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDbContext<SGCMContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IPacienteRepository, PacienteRepositoryEF>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Add services to the container.
 
@@ -24,8 +36,6 @@ namespace SGCM.API
             }
 
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
