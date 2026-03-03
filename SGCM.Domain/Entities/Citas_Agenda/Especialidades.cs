@@ -1,4 +1,5 @@
 ﻿using SGCM.Domain.Base;
+using SGCM.Domain.Exceptions;
 
 namespace SGCM.Domain.Entities.Medicos
 {
@@ -19,13 +20,13 @@ namespace SGCM.Domain.Entities.Medicos
         protected override void ValidarEntradaDatos()
         {
             if (string.IsNullOrEmpty(Nombre))
-                throw new Exception("El nombre de la especialidad no puede estar vacío.");
+                throw new ExcepcionValidacion("El nombre de la especialidad no puede estar vacío.");
             if (Nombre.Length > 50
-                ) throw new Exception("El nombre de la especialidad no debe sobrepasar los 50 caracteres");
+                ) throw new ExcepcionValidacion("El nombre de la especialidad no debe sobrepasar los 50 caracteres");
             if (string.IsNullOrEmpty(Descripcion))
-                throw new Exception("La descripción no puede estar vacia");
+                throw new ExcepcionValidacion("La descripción no puede estar vacia");
             if (Descripcion.Length > 200)
-                throw new Exception("La descripción no debe sobrepasar los 200 caracteres");
+                throw new ExcepcionValidacion("La descripción no debe sobrepasar los 200 caracteres");
 
 
 
