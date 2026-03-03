@@ -11,7 +11,7 @@ namespace SGCM.Persistence.Repositories
     {
         private readonly SGCMContext _context;
 
-        public DisponibilidadRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
+        public DisponibilidadRepositoryEF(SGCMContext context) =>
             _context = context;
         
 

@@ -10,7 +10,7 @@ namespace SGCM.Persistence.Repositories
     public sealed class EspecialidadesRepositoryEF : IEspecialidadesRepository
     {
         private readonly SGCMContext _context;
-        public EspecialidadesRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
+        public EspecialidadesRepositoryEF(SGCMContext context) =>
             _context = context;
         
 

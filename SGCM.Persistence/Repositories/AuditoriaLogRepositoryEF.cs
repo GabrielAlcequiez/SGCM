@@ -10,7 +10,7 @@ namespace SGCM.Persistence.Repositories
     {
 
         private readonly SGCMContext _context;
-        public AuditoriaLogRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
+        public AuditoriaLogRepositoryEF(SGCMContext context) =>
             _context = context;
         
        

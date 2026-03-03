@@ -10,7 +10,7 @@ namespace SGCM.Persistence.Repositories
     {
         private readonly SGCMContext _context;
 
-        public ProveedoresRepositoryEF(IUnitOfWork unitOfWork, SGCMContext context) =>
+        public ProveedoresRepositoryEF(SGCMContext context) =>
             _context = context;
         
 
