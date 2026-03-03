@@ -42,7 +42,7 @@ namespace SGCM.Persistence.Repositories
             await _context.Citas.ToListAsync();
 
         public async Task<IEnumerable<Citas>> ObtenerPorFechaAsync(DateTime fecha) =>
-            await _context.Citas.Where(c => c.FechaCreacion.Date == fecha.Date).ToListAsync();
+            await _context.Citas.Where(c => c.FechaHora.Date == fecha.Date).ToListAsync();
 
         public async Task<IEnumerable<Citas>> ObtenerPorMedicoAsync(int medicoId) =>
             await _context.Citas.Where(c => c.MedicoId == medicoId).ToListAsync();
