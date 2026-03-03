@@ -30,7 +30,7 @@ namespace SGCM.Persistence.Repositories
             var cita = await ObtenerPorIdAsync(id);
             if (cita is null)
                 throw new ExcepcionNoEncontrado("Citas", id);
-            _context.Citas.Update(cita);
+            _context.Citas.Remove(cita);
         }
         #endregion
 
