@@ -34,6 +34,19 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
                 throw new ExcepcionValidacion("El rol no puede tener más de 20 caracteres.");
         }
 
+        public void Actualizar(string email, string rol)
+        {
+            Email = email;
+            Rol = rol;
+            ValidarEntradaDatos();
+        }
 
+        public void ActualizarPassword(string nuevoPasswordHash)
+        {
+            if (string.IsNullOrEmpty(nuevoPasswordHash))
+                throw new ExcepcionValidacion("El password no puede estar vacío.");
+
+            PasswordHash = nuevoPasswordHash;
+        }
     }
 }
