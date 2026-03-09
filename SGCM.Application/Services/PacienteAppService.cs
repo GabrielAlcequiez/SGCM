@@ -53,7 +53,7 @@ namespace SGCM.Application.Services
 
             if (paciente is null)
             {
-                throw new ExcepcionReglaNegocio($"No existe un paciente con ID: {id}", "PACIENTE_NO_ENCONTRADO");
+                throw new ExcepcionNoEncontrado("Paciente", id);
             }
             return new PacienteResponseDto
             {
@@ -93,7 +93,7 @@ namespace SGCM.Application.Services
             var paciente = await _repository.ObtenerPorIdAsync(id);
             if (paciente is null)
             {
-                throw new ExcepcionReglaNegocio($"No existe un paciente con ID: {id}", "PACIENTE_NO_ENCONTRADO");
+                throw new ExcepcionNoEncontrado("Paciente", id);
             }
 
             paciente.Actualizar(
@@ -129,7 +129,7 @@ namespace SGCM.Application.Services
 
             if (paciente is null)
             {
-                throw new ExcepcionReglaNegocio($"No existe un paciente con ID: {id}", "PACIENTE_NO_ENCONTRADO");
+                throw new ExcepcionNoEncontrado("Paciente", id);
             }
 
             await _repository.EliminarAsync(id);
