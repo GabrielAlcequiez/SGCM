@@ -63,5 +63,19 @@ namespace SGCM.Domain.Entities.Pacientes
                 throw new ExcepcionValidacion("El ID debe ser valido.");
             }
         }
+
+        public void Actualizar(string nombre, string apellido, string telefono,
+                       string direccion, DateOnly fechaNacimiento,
+                       int? proveedorId, string? nss)
+        {
+            Nombre = nombre;
+            Apellido = apellido;
+            Telefono = telefono;
+            Direccion = direccion;
+            FechaNacimiento = fechaNacimiento;
+            ProveedorId = proveedorId;
+            NSS = nss;
+            ValidarEntradaDatos();
+        }
     }
 }

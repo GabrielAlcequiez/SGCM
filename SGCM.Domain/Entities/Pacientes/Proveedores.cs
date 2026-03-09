@@ -41,5 +41,14 @@ namespace SGCM.Domain.Entities.Pacientes
             if (CoberturaDefault < 0 || CoberturaDefault > 100)
                 throw new ExcepcionValidacion("La cobertura default debe estar entre 0 y 100.");
         }
+
+        public void Actualizar(string nombre, string rnc, string telefono, decimal coberturaDefault)
+        {
+            Nombre = nombre;
+            RNC = rnc;
+            Telefono = telefono;
+            CoberturaDefault = coberturaDefault;
+            ValidarEntradaDatos();
+        }
     }
 }
