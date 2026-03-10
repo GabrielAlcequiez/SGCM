@@ -39,7 +39,7 @@ namespace SGCM.Domain.Services
         }
 
         // Para mejor legibilidad en los mensajes de error, convertimos el número del día de la semana a su nombre correspondiente
-        private string ObtenerNombreDia(int diaSemana)
+        public string ObtenerNombreDia(int diaSemana)
         {
             return diaSemana switch
             {
@@ -51,6 +51,17 @@ namespace SGCM.Domain.Services
                 5 => "Viernes",
                 6 => "Sábado"
             };
+        }
+
+        public void ValidarConsistenciaHorario(TimeSpan inicio, TimeSpan fin, bool esDiaLibre)
+        {
+            if (esDiaLibre)
+                return;
+
+            if (!esDiaLibre && fin <= inicio)
+            {
+                throw new ExcepcionValidacion("La hora de fin debe ser mayor que la hora de inicio para días no libres.");
+            }
         }
     }
 }
