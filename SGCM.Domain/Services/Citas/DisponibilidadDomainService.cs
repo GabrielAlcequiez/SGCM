@@ -8,13 +8,16 @@ namespace SGCM.Domain.Services
     {
         private readonly IDisponibilidadRepository _disponibilidadRepository;
         private readonly IMedicoRepository _medicoRepository;
+        private readonly ICitaRepository _citaRepository;
 
         public DisponibilidadDomainService(
             IDisponibilidadRepository disponibilidadRepository,
-            IMedicoRepository medicoRepository)
+            IMedicoRepository medicoRepository,
+            ICitaRepository citaRepository)
         {
             _disponibilidadRepository = disponibilidadRepository;
             _medicoRepository = medicoRepository;
+            _citaRepository = citaRepository;
         }
 
         public async Task ValidarDisponibilidadUnicaPorDiaAsync(int medicoId, int diaSemana)
@@ -62,6 +65,19 @@ namespace SGCM.Domain.Services
             {
                 throw new ExcepcionValidacion("La hora de fin debe ser mayor que la hora de inicio para días no libres.");
             }
+        }
+
+        public async Task PuedeEliminarCitaAsync(int disponibilidadId)
+        {
+            var dispo = await _disponibilidadRepository.ObtenerPorIdAsync(disponibilidadId);
+            if (dispo is null)
+                throw new ExcepcionNoEncontrado("Disponibilidad", disponibilidadId);
+
+            bool tieneCitas = await _citaRepository.ExisteCitaEnDiaSemanaAsync(dispo.MedicoId, dispo.DiaSemana);
+
+            if (tieneCitas)
+                throw new ExcepcionReglaNegocio($"No se puede eliminar el horario de los {ObtenerNombreDia(dispo.DiaSemana)}, " +
+                    $"porque ya hay pacientes agendados para ese día.", "DISPONIBILIDAD_CON_CITAS");
         }
     }
 }

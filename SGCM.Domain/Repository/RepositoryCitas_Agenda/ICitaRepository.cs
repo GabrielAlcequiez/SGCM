@@ -10,5 +10,6 @@ namespace SGCM.Domain.Repository.Citas_Agenda
         Task<IEnumerable<Citas>> ObtenerPorFechaAsync(DateTime fecha);
         Task<bool> ExisteCitaActivaPorMedicoAsync(int medicoId);
         Task<bool> ExisteCitaActivaPorPacienteAsync(int pacienteId);
+        Task<bool> ExisteCitaEnDiaSemanaAsync(int medicoId, int diaSemana);
     }
 }

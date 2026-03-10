@@ -61,6 +61,14 @@ namespace SGCM.Persistence.Repositories
             return await _context.Citas
                 .AnyAsync(c => c.PacienteId == pacienteId && (c.Estado == 1 || c.Estado == 2));
         }
+
+        public async Task<bool> ExisteCitaEnDiaSemanaAsync(int medicoId, int diaSemana)
+        {
+            return await _context.Citas
+                .AnyAsync(c => c.MedicoId == medicoId
+                          && (int)c.FechaHora.DayOfWeek == diaSemana
+                          && c.Estado != 3);
+        }
         #endregion
     }
 }
