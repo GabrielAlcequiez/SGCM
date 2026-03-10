@@ -2,7 +2,7 @@
 {
     public interface IMedicoDomainService
     {
-        Task<bool> EsExequaturUnicoAsync(string exequatur);
-        Task<bool> UsuarioYaTienePerfilMedicoAsync(int usuarioId); 
+        Task EsExequaturUnicoAsync(string exequatur);
+        Task UsuarioYaTienePerfilMedicoAsync(int usuarioId); 
     }
 }

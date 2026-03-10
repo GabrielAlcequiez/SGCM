@@ -1,4 +1,5 @@
-﻿using SGCM.Domain.Repository.Citas_Agenda;
+﻿using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Domain.Services.Interfaces.ICitas;
 
 namespace SGCM.Domain.Services
@@ -12,14 +13,21 @@ namespace SGCM.Domain.Services
             _medicoRepository = medicoRepository;
         }
 
-        public Task<bool> EsExequaturUnicoAsync(string exequatur)
+        public async Task EsExequaturUnicoAsync(string exequatur)
         {
-            throw new NotImplementedException();
+            var medicoExistente = _medicoRepository.ObtenerPorExequaturAsync(exequatur);
+            if (medicoExistente is not null)
+                throw new ExcepcionReglaNegocio($"Ya existe un médico registrado con el exequatur: {exequatur}", "EXEQUATUR_YA_EXISTE");
         }
 
-        public Task<bool> UsuarioYaTienePerfilMedicoAsync(int usuarioId)
+        public async Task UsuarioYaTienePerfilMedicoAsync(int usuarioId)
         {
-            throw new NotImplementedException();
+            var medicoExistente = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioId);
+
+            if (medicoExistente != null)
+            {
+                throw new ExcepcionReglaNegocio($"El usuario con ID {usuarioId} ya tiene un perfil de médico asignado.", "MEDICO_EXISTE");
+            }
         }
     }
 }
