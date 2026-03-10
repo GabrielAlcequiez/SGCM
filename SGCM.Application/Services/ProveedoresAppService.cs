@@ -3,6 +3,7 @@ using SGCM.Application.Interfaces;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Services.Interfaces.IPacientes;
 
 namespace SGCM.Application.Services
 {
@@ -10,10 +11,12 @@ namespace SGCM.Application.Services
     {
         private readonly IProveedoresRepository _repository;
         private readonly IAuditoriaLogger _auditoriaLogger;
-        public ProveedoresAppService(IProveedoresRepository repository, IAuditoriaLogger auditoriaLogger)
+        private readonly IProveedoresDomainService _domainService;
+        public ProveedoresAppService(IProveedoresRepository repository, IAuditoriaLogger auditoriaLogger, IProveedoresDomainService domainService)
         {
             _repository = repository;
             _auditoriaLogger = auditoriaLogger;
+            _domainService = domainService;
         }
 
         public async Task<ProveedoresResponseDto> CrearAsync(CrearProveedoresDto dto)
@@ -25,6 +28,9 @@ namespace SGCM.Application.Services
                 dto.Telefono,
                 dto.CoberturaDefault
             );
+
+            await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
+            await _domainService.EsRNCUnicoAsync(proveedor.RNC);
 
             await _repository.AgregarAsync(proveedor);
 
@@ -49,6 +55,8 @@ namespace SGCM.Application.Services
                 throw new ExcepcionReglaNegocio($"No existe un proveedor con ID: {id}", "PROVEEDOR_NO_ENCONTRADO");
 
             proveedor.Actualizar(dtoC.Nombre, dtoC.RNC, dtoC.Telefono, dtoC.CoberturaDefault);
+
+            await _domainService.ValidarNombreUnicoAsync(dtoC.Nombre);
 
             await _repository.ActualizarAsync(proveedor);
 
