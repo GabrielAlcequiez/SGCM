@@ -29,8 +29,7 @@ namespace SGCM.Domain.Services
             if (medico is null)
                 throw new ExcepcionNoEncontrado("Medico", medicoId);
 
-            var citasMedico = await _citaRepository.ObtenerPorMedicoAsync(medicoId);
-            bool tieneCitasActivas = citasMedico.Any(c => c.Estado == 1 || c.Estado == 2);
+            bool tieneCitasActivas = await _citaRepository.ExisteCitaActivaPorMedicoAsync(medicoId);
 
             if (tieneCitasActivas)    
                 throw new ExcepcionReglaNegocio($"No se puede eliminar el médico con ID {medicoId} porque tiene citas activas.", "MEDICO_TIENE_CITAS_ACTIVAS")

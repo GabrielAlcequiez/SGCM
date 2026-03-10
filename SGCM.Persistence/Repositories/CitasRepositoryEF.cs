@@ -12,7 +12,7 @@ namespace SGCM.Persistence.Repositories
         private readonly SGCMContext _context;
         public CitasRepositoryEF(SGCMContext context) =>
             _context = context;
-        
+
 
         #region Metodos de Registro
         public Task ActualizarAsync(Citas entidad)
@@ -22,7 +22,7 @@ namespace SGCM.Persistence.Repositories
         }
         public Task AgregarAsync(Citas entidad)
         {
-           _context.Citas.Add(entidad);
+            _context.Citas.Add(entidad);
             return Task.CompletedTask;
         }
         public async Task EliminarAsync(int id)
@@ -49,6 +49,12 @@ namespace SGCM.Persistence.Repositories
 
         public async Task<IEnumerable<Citas>> ObtenerPorPacienteAsync(int pacienteId) =>
             await _context.Citas.Where(c => c.PacienteId == pacienteId).ToListAsync();
+
+        public async Task<bool> ExisteCitaActivaPorMedicoAsync(int medicoId)
+        {
+            return await _context.Citas
+                .AnyAsync(c => c.MedicoId == medicoId && (c.Estado == 1 || c.Estado == 2));
+        }
         #endregion
     }
 }
