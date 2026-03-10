@@ -9,16 +9,16 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
         public string Apellido { get; private set; }
 
         public int UsuarioId { get; private set; }
-        // Para decisión de diferentes tiposd de admin, como la secretaria, los jefes, etc.
-        //public string Cargo { get; private set; } 
 
-        public Administradores(string nombre, string apellido, int usuarioId)
+        public string Cargo { get; private set; } 
+
+        public Administradores(int usuarioId, string nombre, string apellido, string cargo)
         {
+            UsuarioId = usuarioId;
             Nombre = nombre;
             Apellido = apellido;
-            UsuarioId = usuarioId;
+            Cargo = cargo;
             ValidarEntradaDatos();
-
         }
 
         protected override void ValidarEntradaDatos()
@@ -33,8 +33,21 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
             if (Apellido.Length > 50)
                 throw new ExcepcionValidacion("El apellido no puede tener más de 50 caracteres.");
 
+            if (Cargo.Length > 50)
+            {
+                throw new ExcepcionValidacion("El cargo no puede tener más de 50 caracteres.");
+            }
+
             if (UsuarioId <= 0)
                 throw new ExcepcionValidacion("El ID debe ser valido.");
+
+        }
+
+        public void Actualizar(string nombre, string apellido, string? cargo)
+        {
+            Nombre = nombre;
+            Apellido = apellido;
+            Cargo = cargo ?? string.Empty;
         }
     }
 }
