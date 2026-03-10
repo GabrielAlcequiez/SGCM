@@ -89,6 +89,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             if (dispo is null)
                 throw new ExcepcionNoEncontrado("Disponibilidad", id);
 
+            await _domainService.PuedeEliminarCitaAsync(dispo.Id);
+
             await _repository.EliminarAsync(id);
 
             int usuarioIdTemp = 0;
