@@ -21,10 +21,7 @@ namespace SGCM.Domain.Services
         {
             var citasDelMedico = await _citaRepository.ObtenerPorMedicoAsync(medicoId);
 
-            bool existeConflicto = citasDelMedico.Any(c =>
-                c.FechaHora == fechaHora &&
-                c.Estado != 3
-            );
+            bool existeConflicto = await _citaRepository.ExisteCitaEnHorarioAsync(medicoId, fechaHora);
 
             if (existeConflicto)
             {

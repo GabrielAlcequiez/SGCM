@@ -69,6 +69,12 @@ namespace SGCM.Persistence.Repositories
                           && (int)c.FechaHora.DayOfWeek == diaSemana
                           && c.Estado != 3);
         }
+
+        public async Task<bool> ExisteCitaEnHorarioAsync(int medicoId, DateTime fechaHora)
+        {
+            return await _context.Citas
+                .AnyAsync(c => c.MedicoId == medicoId && c.FechaHora == fechaHora && c.Estado != 3);
+        }
         #endregion
     }
 }
