@@ -55,6 +55,12 @@ namespace SGCM.Persistence.Repositories
             return await _context.Citas
                 .AnyAsync(c => c.MedicoId == medicoId && (c.Estado == 1 || c.Estado == 2));
         }
+
+        public async Task<bool> ExisteCitaActivaPorPacienteAsync(int pacienteId)
+        {
+            return await _context.Citas
+                .AnyAsync(c => c.PacienteId == pacienteId && (c.Estado == 1 || c.Estado == 2));
+        }
         #endregion
     }
 }

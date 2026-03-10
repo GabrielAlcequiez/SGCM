@@ -36,9 +36,8 @@ namespace SGCM.Domain.Services
             {
                 throw new ExcepcionNoEncontrado("Paciente", pacienteId);
             }
-            var citasDelPaciente = await _citaRepository.ObtenerPorPacienteAsync(pacienteId);
 
-            bool tieneCitasActivas = citasDelPaciente.Any(c => c.Estado == 1 || c.Estado == 2);
+            bool tieneCitasActivas = await _citaRepository.ExisteCitaActivaPorPacienteAsync(pacienteId);
 
             if (tieneCitasActivas)
             {
