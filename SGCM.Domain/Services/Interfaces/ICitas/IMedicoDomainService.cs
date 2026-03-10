@@ -4,5 +4,8 @@
     {
         Task EsExequaturUnicoAsync(string exequatur);
         Task UsuarioYaTienePerfilMedicoAsync(int usuarioId); 
+
+        Task PuedeEliminarMedicoAsync(int medicoId);
+
     }
 }
