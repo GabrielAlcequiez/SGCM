@@ -19,8 +19,6 @@ namespace SGCM.Domain.Services
 
         public async Task ValidarHorarioDisponibleAsync(int medicoId, DateTime fechaHora)
         {
-            var citasDelMedico = await _citaRepository.ObtenerPorMedicoAsync(medicoId);
-
             bool existeConflicto = await _citaRepository.ExisteCitaEnHorarioAsync(medicoId, fechaHora);
 
             if (existeConflicto)
@@ -69,7 +67,7 @@ namespace SGCM.Domain.Services
             if (estadoActual == 3)
             {
                 throw new ExcepcionReglaNegocio(
-                    "No se puede reabrir ni completar una cita que ya fue cancelada. Debe agendar una nueva.",
+                    "La cita ya fue cancelada",
                     "CITA_CANCELADA_INMUTABLE"
                 );
             }

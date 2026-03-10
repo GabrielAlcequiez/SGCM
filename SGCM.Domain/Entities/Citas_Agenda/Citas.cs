@@ -13,11 +13,11 @@ namespace SGCM.Domain.Entities.Citas_Agenda
         public int MedicoId { get; private set; }
         public DateTime FechaCreacion { get; private set; }
 
-        public Citas(DateTime fechaHora, int estado, string motivo, int pacienteId, int medicoId)
+        public Citas(DateTime fechaHora, string motivo, int pacienteId, int medicoId)
         {
             
             FechaHora = fechaHora;
-            Estado = estado;
+            Estado = 1;
             Motivo = motivo;
             PacienteId = pacienteId;
             MedicoId = medicoId;
@@ -37,6 +37,13 @@ namespace SGCM.Domain.Entities.Citas_Agenda
                 throw new ExcepcionValidacion("El motivo de la cita no puede estar vacío.");
             if (Motivo.Length > 200)
                 throw new ExcepcionValidacion("El motivo no puede exceder los 200 caracteres.");
+        }
+
+        public void Actualizar(DateTime fechaHora, string motivo)
+        {
+            FechaHora = fechaHora;
+            Motivo = motivo;
+            ValidarEntradaDatos();
         }
     }
 }
