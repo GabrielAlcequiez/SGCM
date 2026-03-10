@@ -30,5 +30,14 @@ namespace SGCM.Domain.Entities.Medicos
             if (MedicoId <= 0)
                 throw new ExcepcionValidacion("Debe estar asociada a un médico válido.");
         }
+
+        public void Actualizar(int diaSemana, TimeSpan horaInicio, TimeSpan horaFin, bool esDiaLibre)
+        {
+            DiaSemana = diaSemana;
+            HoraInicio = horaInicio;
+            HoraFin = horaFin;
+            EsDiaLibre = esDiaLibre;
+            ValidarEntradaDatos();
+        }
     }
 }
