@@ -3,17 +3,20 @@ using SGCM.Application.Interfaces;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Services.Interfaces.IPacientes;
 
 namespace SGCM.Application.Services
 {
     public class PacienteAppService : IPacienteAppService
     {
         private readonly IPacienteRepository _repository;
+        private readonly IPacienteDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
-        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger)
+        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger, IPacienteDomainService domainService)
         {
             _auditoriaLogger = auditoriaLogger;
             _repository = repository;
+            _domainService = domainService;
         }
 
 
@@ -31,6 +34,7 @@ namespace SGCM.Application.Services
                 usuarioIdTemp
             );
 
+            await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
 
@@ -96,6 +100,11 @@ namespace SGCM.Application.Services
                 throw new ExcepcionNoEncontrado("Paciente", id);
             }
 
+            if(paciente.Telefono != dto.Telefono)
+            {
+                await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
+            }
+
             paciente.Actualizar(
                 dto.Nombre,
                 dto.Apellido,
@@ -125,6 +134,8 @@ namespace SGCM.Application.Services
 
         public async Task<bool> EliminarAsync(int id)
         {
+            await _domainService.PuedeEliminarPacienteAsync(id);
+
             var paciente = await _repository.ObtenerPorIdAsync(id);
 
             if (paciente is null)

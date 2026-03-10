@@ -23,7 +23,7 @@ namespace SGCM.Domain.Services
             if (pacientesConEseTelefono.Any())
             {
                 throw new ExcepcionReglaNegocio(
-                    $"El número de teléfono '{telefono}' ya está vinculado a otro paciente.",
+                    $"El número de teléfono '{telefono}' ya está vinculado a otro paciente o ya está registrado.",
                     "NUMERO_TELEFONICO_DUPLICADO"
                 );
             }
