@@ -10,8 +10,6 @@ namespace SGCM.Domain.Entities.Medicos
 
         public Especialidades(string nombre, string descripcion)
         {
-
-
             Nombre = nombre;
             Descripcion = descripcion;
             ValidarEntradaDatos();
@@ -27,9 +25,13 @@ namespace SGCM.Domain.Entities.Medicos
                 throw new ExcepcionValidacion("La descripción no puede estar vacia");
             if (Descripcion.Length > 200)
                 throw new ExcepcionValidacion("La descripción no debe sobrepasar los 200 caracteres");
+        }
 
-
-
+        public void Actualizar(string nombre, string descripcion)
+        {
+            Nombre = nombre;
+            Descripcion = descripcion;
+            ValidarEntradaDatos();
         }
     }
 }
