@@ -1,6 +1,6 @@
 ﻿using SGCM.Application.Dtos.Seguridad_Usuarios;
 
-namespace SGCM.Application.Interfaces
+namespace SGCM.Application.Interfaces.Seguridad_Usuarios
 {
     public interface IAuditoriaLogAppService
     {

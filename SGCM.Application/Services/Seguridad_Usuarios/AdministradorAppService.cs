@@ -1,12 +1,12 @@
 ﻿using SGCM.Application.Dtos.Seguridad_Usuarios;
-using SGCM.Application.Interfaces;
+using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Seguridad_Usuarios;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Services.Interfaces.ISeguridad_Usuarios;
 
-namespace SGCM.Application.Services
+namespace SGCM.Application.Services.Seguridad_Usuarios
 {
     public class AdministradorAppService : IAdministradorAppService
     {

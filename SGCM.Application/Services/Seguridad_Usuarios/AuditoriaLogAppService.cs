@@ -1,9 +1,9 @@
 ﻿using SGCM.Application.Dtos.Seguridad_Usuarios;
-using SGCM.Application.Interfaces;
+using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 
-namespace SGCM.Application.Services
+namespace SGCM.Application.Services.Seguridad_Usuarios
 {
     public class AuditoriaLogAppService : IAuditoriaLogAppService
     {
