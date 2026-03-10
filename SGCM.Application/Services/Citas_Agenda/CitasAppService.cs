@@ -176,5 +176,26 @@ namespace SGCM.Application.Services.Citas_Agenda
             }).ToList();
         }
 
+        public async Task<bool> CompletarCitaAsync(int id)
+        {
+            var cita = await _citaRepository.ObtenerPorIdAsync(id);
+
+            if (cita is null)
+                throw new ExcepcionNoEncontrado("Cita", id);
+
+            _citasDomainService.ValidarTransicionEstado(cita.Estado, 2);
+
+            if(cita.FechaHora > DateTime.Now)
+                throw new ExcepcionReglaNegocio("No se pueden completar citas que aun no han sucedido.", "COMPLETADO_NO_VALIDO");
+
+            cita.CambiarEstado(2);
+            await _citaRepository.ActualizarAsync(cita);
+
+            int usuarioIdTemp = 0;
+            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Completar", "Cita",
+                $"Cita completada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
+
+            return true;
+        }
     }
 }
