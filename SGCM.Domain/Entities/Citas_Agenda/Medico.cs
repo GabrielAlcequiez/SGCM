@@ -47,5 +47,15 @@ namespace SGCM.Domain.Entities.Medicos
             if (Exequatur.Length > 20)
                 throw new ExcepcionValidacion("El exequatur no puede tener más de 20 caracteres.");
         }
+
+        public void Actualizar(string nombre, string apellido, string exequatur, string telefono, int especialidadId)
+        {
+            Nombre = nombre;
+            Apellido = apellido;
+            Exequatur = exequatur;
+            Telefono = telefono;
+            EspecialidadId = especialidadId;
+            ValidarEntradaDatos();
+        }
     }
 }

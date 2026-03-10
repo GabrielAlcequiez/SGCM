@@ -31,8 +31,8 @@ namespace SGCM.Domain.Services
 
             bool tieneCitasActivas = await _citaRepository.ExisteCitaActivaPorMedicoAsync(medicoId);
 
-            if (tieneCitasActivas)    
-                throw new ExcepcionReglaNegocio($"No se puede eliminar el médico con ID {medicoId} porque tiene citas activas.", "MEDICO_TIENE_CITAS_ACTIVAS")
+            if (tieneCitasActivas)
+                throw new ExcepcionReglaNegocio($"No se puede eliminar el médico con ID {medicoId} porque tiene citas activas.", "MEDICO_TIENE_CITAS_ACTIVAS");
         }
 
         public async Task UsuarioYaTienePerfilMedicoAsync(int usuarioId)
