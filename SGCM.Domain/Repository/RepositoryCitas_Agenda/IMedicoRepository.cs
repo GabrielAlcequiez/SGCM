@@ -9,5 +9,7 @@ namespace SGCM.Domain.Repository.Citas_Agenda
         Task<Medico?> ObtenerPorUsuarioIdAsync(int usuarioId);
 
         Task<IEnumerable<Medico>> ObtenerPorEspecialidadAsync(int especialidadId);
+
+        Task<bool> ExisteMedicoConEspecialidadAsync(int especialidadId);
     }
 }

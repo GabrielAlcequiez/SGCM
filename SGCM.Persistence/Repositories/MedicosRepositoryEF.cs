@@ -49,6 +49,11 @@ namespace SGCM.Persistence.Repositories
 
         public async Task<IEnumerable<Medico>> ObtenerPorEspecialidadAsync(int especialidadId) =>
             await _context.Medicos.Where(m => m.EspecialidadId == especialidadId).ToListAsync();
+
+        public async Task<bool> ExisteMedicoConEspecialidadAsync(int especialidadId)
+        {
+            return await _context.Medicos.AnyAsync(m => m.EspecialidadId == especialidadId);
+        }
         #endregion
     }
 }
