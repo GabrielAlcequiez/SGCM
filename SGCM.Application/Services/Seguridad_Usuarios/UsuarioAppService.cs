@@ -24,6 +24,7 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
         public async Task<UsuarioResponseDto> CrearAsync(CrearUsuarioDto dto)
         {
+            await _usuarioDomainService.ValidarEmailUnicoAsync(dto.email);
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.password, workFactor: 12);
 
             var usuario = new Usuario
@@ -32,8 +33,6 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
                 passwordHash,
                 dto.Rol
             );
-
-            await _usuarioDomainService.ValidarEmailUnicoAsync(usuario.Email);
 
             await _repository.AgregarAsync(usuario);
 
@@ -55,7 +54,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             if (usuario is null)
                 throw new ExcepcionNoEncontrado("Usuario", id);
 
-            await _usuarioDomainService.ValidarEmailUnicoAsync(dto.email);
+            if (usuario.Email != dto.email)
+                await _usuarioDomainService.ValidarEmailUnicoAsync(dto.email);
 
             usuario.Actualizar(dto.email, dto.Rol);
 

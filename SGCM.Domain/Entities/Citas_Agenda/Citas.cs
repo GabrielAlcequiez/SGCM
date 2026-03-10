@@ -45,5 +45,10 @@ namespace SGCM.Domain.Entities.Citas_Agenda
             Motivo = motivo;
             ValidarEntradaDatos();
         }
+
+        public void CambiarEstado(int nuevoEstado)
+        {
+            Estado = nuevoEstado;
+        }
     }
 }
