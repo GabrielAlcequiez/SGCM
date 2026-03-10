@@ -4,6 +4,7 @@ using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Seguridad_Usuarios;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
+using SGCM.Domain.Services.Interfaces.ISeguridad_Usuarios;
 
 namespace SGCM.Application.Services
 {
@@ -11,20 +12,18 @@ namespace SGCM.Application.Services
     {
         private readonly IUsuarioRepository _repository;
         private readonly IAuditoriaLogger _auditoriaLogger;
+        private readonly IUsuarioDomainService _usuarioDomainService;
 
-        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger)
+        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger, IUsuarioDomainService usuarioDomain)
         {
             _repository = repository;
             _auditoriaLogger = auditoriaLogger;
+            _usuarioDomainService = usuarioDomain;
         }
 
 
         public async Task<UsuarioResponseDto> CrearAsync(CrearUsuarioDto dto)
         {
-            var emailExistente = await _repository.ObtenerPorEmailAsync(dto.email);
-            if (emailExistente is not null)
-                throw new ExcepcionReglaNegocio($"El email '{dto.email}' ya está registrado", "EMAIL_DUPLICADO");
-
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.password, workFactor: 12);
 
             var usuario = new Usuario
@@ -33,6 +32,8 @@ namespace SGCM.Application.Services
                 passwordHash,
                 dto.Rol
             );
+
+            await _usuarioDomainService.ValidarEmailUnicoAsync(usuario.Email);
 
             await _repository.AgregarAsync(usuario);
 
@@ -54,12 +55,7 @@ namespace SGCM.Application.Services
             if (usuario is null)
                 throw new ExcepcionNoEncontrado("Usuario", id);
 
-            if (usuario.Email != dto.email)
-            {
-                var emailExistente = await _repository.ObtenerPorEmailAsync(dto.email);
-                if (emailExistente is not null)
-                    throw new ExcepcionReglaNegocio($"El email '{dto.email}' ya está registrado", "EMAIL_DUPLICADO");
-            }
+            await _usuarioDomainService.ValidarEmailUnicoAsync(dto.email);
 
             usuario.Actualizar(dto.email, dto.Rol);
 
@@ -102,6 +98,8 @@ namespace SGCM.Application.Services
 
             if (user is null)
                 throw new ExcepcionNoEncontrado("Usuario", id);
+
+            await _usuarioDomainService.PuedeEliminarUsuarioAsync(user.Id);
 
             await _repository.EliminarAsync(id);
 
