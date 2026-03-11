@@ -3,7 +3,7 @@ using SGCM.Domain.Exceptions;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
-    public class Administradores : BaseEntity, IAggregateRoot
+    public class Administradores : DeletableEntity
     {
         public string Nombre { get; private set; }
         public string Apellido { get; private set; }

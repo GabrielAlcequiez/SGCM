@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SGCM.Domain.Base;
 using SGCM.Domain.Entities.Citas_Agenda;
 using SGCM.Domain.Entities.Medicos;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Entities.Seguridad_Usuarios;
+using System.Linq.Expressions;
 
 namespace SGCM.Persistence.Context
 {
@@ -19,5 +21,26 @@ namespace SGCM.Persistence.Context
         public DbSet<Medico> Medicos { get; set; }
         public DbSet<Especialidades> Especialidades { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(DeletableEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    modelBuilder.Entity(entityType.ClrType)
+                                .HasQueryFilter(ConvertirFiltroExpresion(entityType.ClrType));
+                }
+            }
+        }
+        private static LambdaExpression ConvertirFiltroExpresion(Type type)
+        {
+            var parameter = Expression.Parameter(type, "x");
+            var property = Expression.Property(parameter, nameof(DeletableEntity.EstaEliminado));
+            var notExpression = Expression.Not(property);
+            return Expression.Lambda(notExpression, parameter);
+        }
     }
+
 }

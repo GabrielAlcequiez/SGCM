@@ -47,6 +47,7 @@ namespace SGCM.Application.Services.Pacientes
             };
 
         }
+
         public async Task<ProveedoresResponseDto> ActualizarAsync(int id, CrearProveedoresDto dtoC)
         {
             var proveedor = await _repository.ObtenerPorIdAsync(id);
@@ -74,7 +75,6 @@ namespace SGCM.Application.Services.Pacientes
 
         }
 
-
         public async Task<bool> EliminarAsync(int id)
         {
             var proveedor = await _repository.ObtenerPorIdAsync(id);
@@ -82,7 +82,8 @@ namespace SGCM.Application.Services.Pacientes
             if (proveedor is null)
                 throw new ExcepcionReglaNegocio($"No existe un proveedor con ID: {id}", "PROVEEDOR_NO_ENCONTRADO");
         
-            await _repository.EliminarAsync(id);
+            proveedor.Eliminar();
+            await _repository.ActualizarAsync(proveedor);
 
             int usuarioIdTemp = 0; // Temporal hasta que se implemente la autenticación
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Proveedores", $"Proveedor eliminado con ID: {proveedor.Id}");

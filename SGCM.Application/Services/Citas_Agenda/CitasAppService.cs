@@ -70,6 +70,7 @@ namespace SGCM.Application.Services.Citas_Agenda
 
 
         }
+
         public async Task<CitaResponseDto> ActualizarAsync(int id, CrearCitaDto dtoC)
         {
             var cita = await _citaRepository.ObtenerPorIdAsync(id);
@@ -105,6 +106,7 @@ namespace SGCM.Application.Services.Citas_Agenda
             };
 
         }
+
         public async Task<bool> EliminarAsync(int id)
         {
             var cita = await _citaRepository.ObtenerPorIdAsync(id);
@@ -114,7 +116,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             if(cita.Estado == 2)
                 throw new ExcepcionReglaNegocio("No se pueden eliminar citas completadas.", "BORRADO_NO_VALIDO");
 
-            await _citaRepository.EliminarAsync(id);
+            cita.Eliminar();
+            await _citaRepository.ActualizarAsync(cita);
 
             int usuarioIdTemp = 0;
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Cita",
@@ -122,6 +125,7 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             return true;
         }
+
         public async Task<bool> CancelarCitaAsync(int id)
         {
             var cita = await _citaRepository.ObtenerPorIdAsync(id);

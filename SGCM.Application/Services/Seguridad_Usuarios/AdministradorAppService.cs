@@ -72,7 +72,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             if( administradorExistente is null)
                throw new ExcepcionNoEncontrado("Administradores", id);
 
-            await _repository.EliminarAsync(id);
+            administradorExistente.Eliminar();
+            await _repository.ActualizarAsync(administradorExistente);
 
             int usuarioIdTemp = 1; // Temporal hasta implementar autenticación
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");

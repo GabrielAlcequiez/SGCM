@@ -70,7 +70,6 @@ namespace SGCM.Application.Services.Citas_Agenda
             };
         }
 
-
         public async Task<bool> EliminarAsync(int id)
         {
             var especialidad = await _repository.ObtenerPorIdAsync(id);
@@ -80,7 +79,9 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             await _domainService.PuedeEliminarEspecialidadAsync(id);
 
-            await _repository.EliminarAsync(id);
+            especialidad.Eliminar();
+            await _repository.ActualizarAsync(especialidad);
+
             int usuarioIdTemp = 0;
             await _logger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Especialidades", $"Se eliminó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
             return true;

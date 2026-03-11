@@ -3,7 +3,7 @@ using SGCM.Domain.Exceptions;
 
 namespace SGCM.Domain.Entities.Medicos
 {
-    public class Especialidades : BaseEntity, IAggregateRoot
+    public class Especialidades : DeletableEntity
     {
         public string Nombre { get; private set; }
         public string Descripcion { get; private set; }

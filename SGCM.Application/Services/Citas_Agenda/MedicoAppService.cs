@@ -84,7 +84,6 @@ namespace SGCM.Application.Services.Citas_Agenda
             };
         }
 
-
         public async Task<bool> EliminarAsync(int id)
         {
             var medico = await _repository.ObtenerPorIdAsync(id);
@@ -95,7 +94,9 @@ namespace SGCM.Application.Services.Citas_Agenda
             }
             await _domainService.PuedeEliminarMedicoAsync(id);
 
-            await _repository.EliminarAsync(id);
+            medico.Eliminar();
+            await _repository.ActualizarAsync(medico);
+
             int usuarioIdTemp = 0;
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Medico", $"Se eliminó el médico con ID: {id}" );
 

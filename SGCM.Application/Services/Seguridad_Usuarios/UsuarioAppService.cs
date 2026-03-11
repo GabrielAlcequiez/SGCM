@@ -48,6 +48,7 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             };
 
         }
+
         public async Task<UsuarioResponseDto> ActualizarAsync(int id, CrearUsuarioDto dto)
         {
             var usuario = await _repository.ObtenerPorIdAsync(id);
@@ -101,7 +102,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _usuarioDomainService.PuedeEliminarUsuarioAsync(user.Id);
 
-            await _repository.EliminarAsync(id);
+            user.Eliminar();
+            await _repository.ActualizarAsync(user);
 
             int usuarioTempId = 0;
             await _auditoriaLogger.RegistrarAsync(usuarioTempId, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
@@ -158,7 +160,5 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
                 FechaRegistro = u.FechaRegistro
             }).ToList();
         }
-
-
     }
 }

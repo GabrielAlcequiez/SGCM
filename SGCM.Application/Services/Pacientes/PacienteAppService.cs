@@ -143,15 +143,12 @@ namespace SGCM.Application.Services.Pacientes
                 throw new ExcepcionNoEncontrado("Paciente", id);
             }
 
-            await _repository.EliminarAsync(id);
-            
+            paciente.Eliminar();
+            await _repository.ActualizarAsync(paciente);
+
             int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
             await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
             return true;
         }
-
-
-
-
     }
 }

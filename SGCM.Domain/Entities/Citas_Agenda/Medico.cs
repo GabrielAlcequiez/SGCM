@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SGCM.Domain.Entities.Medicos
 {
     [Table("Medicos")]
-    public class Medico : BaseEntity, IAggregateRoot
+    public class Medico : DeletableEntity
     {
         public string Nombre { get; private set; }
         public string Apellido { get; private set; }

@@ -1,10 +1,9 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace SGCM.Domain.Entities.Citas_Agenda
 {
-    public class Citas : BaseEntity, IAggregateRoot
+    public class Citas : DeletableEntity
     {
         public DateTime FechaHora { get; private set; }
         public int Estado { get; private set; }
@@ -50,5 +49,6 @@ namespace SGCM.Domain.Entities.Citas_Agenda
         {
             Estado = nuevoEstado;
         }
+
     }
 }

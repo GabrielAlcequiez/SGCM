@@ -3,7 +3,7 @@ using SGCM.Domain.Exceptions;
 
 namespace SGCM.Domain.Entities.Medicos
 {
-    public class Disponibilidad : BaseEntity, IAggregateRoot
+    public class Disponibilidad : BaseEntity
     {
         public int DiaSemana { get; private set; } // 0=Domingo, 1=Lunes, etc.
         public TimeSpan HoraInicio { get; private set; }
