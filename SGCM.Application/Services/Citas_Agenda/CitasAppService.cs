@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Citas_Agenda;
@@ -15,17 +16,19 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly ICitasDomainService _citasDomainService;
         private readonly ICitaRepository _citaRepository;
         private readonly IAuditoriaLogger _auditoriaLogger;
+        private readonly ITokenService _tokenService;
         IMedicoRepository _medicoRepository;
         IPacienteRepository _pacienteRepository;
 
 
-        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository)
+        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService)
         {
             _citasDomainService = domainService;
             _citaRepository = repository;
             _auditoriaLogger = logger;
             _medicoRepository = medicoRepository;
             _pacienteRepository = pacienteRepository;
+            _tokenService = tokenService;
         }
 
         public async Task<CitaResponseDto> CrearAsync(CrearCitaDto dto)
@@ -54,8 +57,8 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             await _citaRepository.AgregarAsync(cita);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Cita",
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                 $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
 
             return new CitaResponseDto
@@ -91,8 +94,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             cita.Actualizar(dtoC.FechaHora, dtoC.Motivo);
             await _citaRepository.ActualizarAsync(cita);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Cita",
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Cita",
                 $"Cita actualizada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {dtoC.FechaHora:dd/MM/yyyy HH:mm}");
 
             return new CitaResponseDto
@@ -119,8 +122,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             cita.Eliminar();
             await _citaRepository.ActualizarAsync(cita);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Cita",
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Cita",
                 $"Cita eliminada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
             return true;
@@ -140,8 +143,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             cita.CambiarEstado(3);
             await _citaRepository.ActualizarAsync(cita);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Cancelar", "Cita",
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Cancelar", "Cita",
                 $"Cita cancelada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
             return true;
@@ -195,8 +198,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             cita.CambiarEstado(2);
             await _citaRepository.ActualizarAsync(cita);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Completar", "Cita",
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Completar", "Cita",
                 $"Cita completada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
             return true;

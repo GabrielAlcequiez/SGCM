@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Pacientes;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Pacientes;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
@@ -12,17 +13,19 @@ namespace SGCM.Application.Services.Pacientes
         private readonly IPacienteRepository _repository;
         private readonly IPacienteDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
-        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger, IPacienteDomainService domainService)
+        private readonly ITokenService _tokenService;
+        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger, IPacienteDomainService domainService, ITokenService tokenService)
         {
             _auditoriaLogger = auditoriaLogger;
             _repository = repository;
             _domainService = domainService;
+            _tokenService = tokenService;
         }
 
 
         public async Task<PacienteResponseDto> CrearAsync(CrearPacienteDto dto)
         {
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             var paciente = new Paciente(
                 dto.Nombre,
                 dto.Apellido,
@@ -31,12 +34,12 @@ namespace SGCM.Application.Services.Pacientes
                 dto.FechaNacimiento,
                 dto.ProveedorId,
                 dto.NSS,
-                usuarioIdTemp
+                usuarioIdActual
             );
 
             await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
 
             return new PacienteResponseDto
             {
@@ -116,8 +119,8 @@ namespace SGCM.Application.Services.Pacientes
             );
 
             await _repository.ActualizarAsync(paciente);
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Paciente", $"Paciente actualizado con ID: {paciente.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Paciente", $"Paciente actualizado con ID: {paciente.Id}");
 
             return new PacienteResponseDto
             {
@@ -146,8 +149,8 @@ namespace SGCM.Application.Services.Pacientes
             paciente.Eliminar();
             await _repository.ActualizarAsync(paciente);
 
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
             return true;
         }
     }

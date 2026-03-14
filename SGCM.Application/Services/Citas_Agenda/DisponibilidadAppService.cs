@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Medicos;
@@ -13,11 +14,13 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IDisponibilidadRepository _repository;
         private readonly IDisponibilidadDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
-        public DisponibilidadAppService(IDisponibilidadRepository repository, IDisponibilidadDomainService domainService, IAuditoriaLogger auditoriaLogger)
+        private readonly ITokenService _tokenService;
+        public DisponibilidadAppService(IDisponibilidadRepository repository, IDisponibilidadDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService)
         {
             _repository = repository;
             _domainService = domainService;
             _auditoriaLogger = auditoriaLogger;
+            _tokenService = tokenService;
         }
 
         public async Task<DisponibilidadResponseDto> CrearAsync(CrearDisponibilidadDto dto)
@@ -35,9 +38,9 @@ namespace SGCM.Application.Services.Citas_Agenda
             );
 
             await _repository.AgregarAsync(dispo);
-            int usuarioIdTemp = 0;
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             string dia = _domainService.ObtenerNombreDia(dto.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.");
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.");
 
             return new DisponibilidadResponseDto
             {
@@ -68,9 +71,9 @@ namespace SGCM.Application.Services.Citas_Agenda
             dispo.Actualizar(dtoC.DiaSemana, dtoC.HoraInicio, dtoC.HoraFin, dtoC.EsDiaLibre);
             await _repository.ActualizarAsync(dispo);
 
-            int usuarioIdTemp = 0;
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             string dia = _domainService.ObtenerNombreDia(dtoC.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Disponibilidad", $"Disponibilidad ID: {id} actualizada para el médico ID: {dispo.MedicoId} el día {dia}.");
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Disponibilidad", $"Disponibilidad ID: {id} actualizada para el médico ID: {dispo.MedicoId} el día {dia}.");
 
             return new DisponibilidadResponseDto
             {
@@ -93,9 +96,9 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             await _repository.EliminarAsync(id);
 
-            int usuarioIdTemp = 0;
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             string dia = _domainService.ObtenerNombreDia(dispo.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Disponibilidad", $"Disponibilidad ID: {id} eliminada para el médico ID: {dispo.MedicoId} el día {dia}.");
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Disponibilidad", $"Disponibilidad ID: {id} eliminada para el médico ID: {dispo.MedicoId} el día {dia}.");
             return true;
         }
 

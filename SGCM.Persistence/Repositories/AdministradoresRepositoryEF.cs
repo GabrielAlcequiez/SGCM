@@ -33,7 +33,7 @@ namespace SGCM.Persistence.Repositories
             {
                 throw new ExcepcionNoEncontrado("Administradores", id);
             }
-            _context.Administradores.Remove(admin);
+            admin.Eliminar();
         }
 
 

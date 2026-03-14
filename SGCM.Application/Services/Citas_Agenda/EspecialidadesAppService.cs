@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Medicos;
@@ -13,11 +14,13 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IEspecialidadesRepository _repository;
         private readonly IEspecialidadDomainService _domainService;
         private readonly IAuditoriaLogger _logger;
-        public EspecialidadesAppService(IEspecialidadesRepository repository, IEspecialidadDomainService domainService, IAuditoriaLogger logger)
+        private readonly ITokenService _tokenService;
+        public EspecialidadesAppService(IEspecialidadesRepository repository, IEspecialidadDomainService domainService, IAuditoriaLogger logger, ITokenService tokenService)
         {
             _domainService = domainService;
             _repository = repository;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         public async Task<EspecialidadesResponseDto> CrearAsync(CrearEspecialidadesDto dto)
@@ -31,8 +34,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             );
             
             await _repository.AgregarAsync(especialidad);
-            int usuarioidTemp = 0;
-            await _logger.RegistrarAsync(usuarioidTemp, "Crear", "Especialidades", $"Se creó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _logger.RegistrarAsync(usuarioIdActual, "Crear", "Especialidades", $"Se creó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
 
             return new EspecialidadesResponseDto
             {
@@ -59,8 +62,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             especialidad.Actualizar(dtoC.Nombre, dtoC.Descripcion);
 
             await _repository.ActualizarAsync(especialidad);
-            int usuarioIdTemp = 0;
-            await _logger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Especialidades", $"Se actualizó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _logger.RegistrarAsync(usuarioIdActual, "Actualizar", "Especialidades", $"Se actualizó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
         
             return new EspecialidadesResponseDto
             {
@@ -82,8 +85,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             especialidad.Eliminar();
             await _repository.ActualizarAsync(especialidad);
 
-            int usuarioIdTemp = 0;
-            await _logger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Especialidades", $"Se eliminó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _logger.RegistrarAsync(usuarioIdActual, "Eliminar", "Especialidades", $"Se eliminó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
             return true;
         }
 

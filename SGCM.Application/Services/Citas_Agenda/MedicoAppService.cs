@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Medicos;
@@ -13,12 +14,14 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IMedicoRepository _repository;
         private readonly IMedicoDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
+        private readonly ITokenService _tokenService;
 
-        public MedicoAppService(IAuditoriaLogger auditoriaLogger, IMedicoRepository repository, IMedicoDomainService domainService)
+        public MedicoAppService(IAuditoriaLogger auditoriaLogger, IMedicoRepository repository, IMedicoDomainService domainService, ITokenService tokenService)
         {
             _auditoriaLogger = auditoriaLogger;
             _repository = repository;
             _domainService = domainService;
+            _tokenService = tokenService;
         }
 
         public async Task<MedicoResponseDto> CrearAsync(CrearMedicoDto dto)
@@ -35,8 +38,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 dto.UsuarioId);
 
             await _repository.AgregarAsync(medico);
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
 
             return new MedicoResponseDto
             {
@@ -70,8 +73,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 dtoC.EspecialidadId);
 
             await _repository.ActualizarAsync(medico);
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Medico", $"Se actualizó el médico con ID: {medico.Id}" );
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Medico", $"Se actualizó el médico con ID: {medico.Id}" );
 
             return new MedicoResponseDto
             {
@@ -97,8 +100,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             medico.Eliminar();
             await _repository.ActualizarAsync(medico);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Medico", $"Se eliminó el médico con ID: {id}" );
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Medico", $"Se eliminó el médico con ID: {id}" );
 
             return true;
         }

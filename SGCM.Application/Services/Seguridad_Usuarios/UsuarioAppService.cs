@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Seguridad_Usuarios;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Seguridad_Usuarios;
@@ -13,12 +14,14 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
         private readonly IUsuarioRepository _repository;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly IUsuarioDomainService _usuarioDomainService;
+        private readonly ITokenService _tokenService;
 
-        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger, IUsuarioDomainService usuarioDomain)
+        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger, IUsuarioDomainService usuarioDomain, ITokenService tokenService)
         {
             _repository = repository;
             _auditoriaLogger = auditoriaLogger;
             _usuarioDomainService = usuarioDomain;
+            _tokenService = tokenService;
         }
 
 
@@ -36,8 +39,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.AgregarAsync(usuario);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
 
             return new UsuarioResponseDto
             {
@@ -62,8 +65,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(usuario);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Usuario", $"Se actualizó el usuario con ID: {usuario.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Usuario", $"Se actualizó el usuario con ID: {usuario.Id}");
 
             return new UsuarioResponseDto
             {
@@ -89,8 +92,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(usuario);
 
-            int usuarioIdTemp = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "CambiarPassword", "Usuario", $"Se cambió el password del usuario con ID: {usuario.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "CambiarPassword", "Usuario", $"Se cambió el password del usuario con ID: {usuario.Id}");
         }
 
         public async Task<bool> EliminarAsync(int id)
@@ -105,8 +108,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             user.Eliminar();
             await _repository.ActualizarAsync(user);
 
-            int usuarioTempId = 0;
-            await _auditoriaLogger.RegistrarAsync(usuarioTempId, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
             return true;
 
 

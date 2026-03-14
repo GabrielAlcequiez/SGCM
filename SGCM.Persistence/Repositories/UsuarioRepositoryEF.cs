@@ -36,8 +36,7 @@ namespace SGCM.Persistence.Repositories
             {
                 throw new ExcepcionNoEncontrado("Usuario", id);
             }
-            _context.Usuarios.Remove(usuario);
-
+            usuario.Eliminar();
         }
 
         #endregion

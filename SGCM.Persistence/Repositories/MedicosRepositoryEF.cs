@@ -30,7 +30,7 @@ namespace SGCM.Persistence.Repositories
             var medico = await ObtenerPorIdAsync(id);
             if (medico is null)
                 throw new ExcepcionNoEncontrado("Medico", id);
-            _context.Medicos.Remove(medico);
+            medico.Eliminar();
         }
         #endregion
 

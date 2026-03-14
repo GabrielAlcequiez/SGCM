@@ -32,7 +32,7 @@ namespace SGCM.Persistence.Repositories
             var especialidad = await _context.Especialidades.FindAsync(id);
             if (especialidad is null)
                 throw new ExcepcionNoEncontrado("Especialidades", id);
-            _context.Especialidades.Remove(especialidad);
+            especialidad.Eliminar();
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Seguridad_Usuarios;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Seguridad_Usuarios;
@@ -13,26 +14,28 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
         private readonly IAdministradoresRepository _repository;
         private readonly IAdministradoresDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
-        public AdministradorAppService(IAdministradoresRepository repository, IAdministradoresDomainService domainService, IAuditoriaLogger auditoriaLogger)
+        private readonly ITokenService _tokenService;
+        public AdministradorAppService(IAdministradoresRepository repository, IAdministradoresDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService)
         {
             _repository = repository;
             _domainService = domainService;
             _auditoriaLogger = auditoriaLogger;
+            _tokenService = tokenService;
         }
 
         public async Task<AdministradorResponseDto> CrearAsync(CrearAdministradorDto dto)
         {
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             var nuevoAdministrador = new Administradores
             (
-                usuarioIdTemp,
+                usuarioIdActual,
                 dto.Nombre,
                 dto.Apellido,
                 dto.Cargo ?? string.Empty
             );
 
             await _repository.AgregarAsync(nuevoAdministrador);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
 
             return new AdministradorResponseDto
             {
@@ -55,8 +58,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(administradorExistente);
 
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación y autorización
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Actualizar", "Administrador", $"Actualización del administrador con ID {administradorExistente.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Administrador", $"Actualización del administrador con ID {administradorExistente.Id}");
             return new AdministradorResponseDto
             {
                 Id = administradorExistente.Id,
@@ -75,8 +78,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             administradorExistente.Eliminar();
             await _repository.ActualizarAsync(administradorExistente);
 
-            int usuarioIdTemp = 1; // Temporal hasta implementar autenticación
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");
 
             return true;
         }

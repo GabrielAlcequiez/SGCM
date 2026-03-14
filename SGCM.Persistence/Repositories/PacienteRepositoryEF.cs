@@ -42,13 +42,12 @@ namespace SGCM.Persistence.Repositories
 
         public async Task EliminarAsync(int id)
         {
-            // Pendiente de implementar soft delete (hard delete actualmente)
             var paciente = await ObtenerPorIdAsync(id);
             if (paciente is null)
             {
                 throw new ExcepcionNoEncontrado("Paciente", id);
             }
-            _context.Pacientes.Remove(paciente);
+            paciente.Eliminar();
         }
 
 

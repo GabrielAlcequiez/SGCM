@@ -26,12 +26,9 @@ namespace SGCM.Persistence.Repositories
             _context.AuditoriaLogs.Add(entidad);
             return Task.CompletedTask;
         }
-        public async Task EliminarAsync(int id)
+        public Task EliminarAsync(int id)
         {
-            var log = await ObtenerPorIdAsync(id);
-            if (log is null)
-                throw new ExcepcionNoEncontrado("Auditoria_Logs", id);
-            _context.AuditoriaLogs.Remove(log);
+            throw new InvalidOperationException("No se permite eliminar logs de auditoría.");
         }
 
         #endregion

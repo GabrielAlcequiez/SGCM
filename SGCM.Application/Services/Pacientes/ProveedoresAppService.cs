@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Pacientes;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Pacientes;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
@@ -12,11 +13,13 @@ namespace SGCM.Application.Services.Pacientes
         private readonly IProveedoresRepository _repository;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly IProveedoresDomainService _domainService;
-        public ProveedoresAppService(IProveedoresRepository repository, IAuditoriaLogger auditoriaLogger, IProveedoresDomainService domainService)
+        private readonly ITokenService _tokenService;
+        public ProveedoresAppService(IProveedoresRepository repository, IAuditoriaLogger auditoriaLogger, IProveedoresDomainService domainService, ITokenService tokenService)
         {
             _repository = repository;
             _auditoriaLogger = auditoriaLogger;
             _domainService = domainService;
+            _tokenService = tokenService;
         }
 
         public async Task<ProveedoresResponseDto> CrearAsync(CrearProveedoresDto dto)
@@ -34,8 +37,8 @@ namespace SGCM.Application.Services.Pacientes
 
             await _repository.AgregarAsync(proveedor);
 
-            int usuarioidtemp = 0; // Temporal hasta que se implemente la autenticación 
-            await _auditoriaLogger.RegistrarAsync(usuarioidtemp, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
         
             return new ProveedoresResponseDto
             {
@@ -61,8 +64,8 @@ namespace SGCM.Application.Services.Pacientes
 
             await _repository.ActualizarAsync(proveedor);
 
-            int usuarioidtemp = 0; // Temporal hasta que se implemente la autenticación
-            await _auditoriaLogger.RegistrarAsync(usuarioidtemp, "Actualizar", "Proveedores", $"Proveedor actualizado con ID: {proveedor.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Proveedores", $"Proveedor actualizado con ID: {proveedor.Id}");
 
             return new ProveedoresResponseDto
             {
@@ -85,8 +88,8 @@ namespace SGCM.Application.Services.Pacientes
             proveedor.Eliminar();
             await _repository.ActualizarAsync(proveedor);
 
-            int usuarioIdTemp = 0; // Temporal hasta que se implemente la autenticación
-            await _auditoriaLogger.RegistrarAsync(usuarioIdTemp, "Eliminar", "Proveedores", $"Proveedor eliminado con ID: {proveedor.Id}");
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Proveedores", $"Proveedor eliminado con ID: {proveedor.Id}");
             return true;
         }
 

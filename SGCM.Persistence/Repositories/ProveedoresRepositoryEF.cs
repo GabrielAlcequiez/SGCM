@@ -56,7 +56,7 @@ namespace SGCM.Persistence.Repositories
             {
                 throw new ExcepcionNoEncontrado("Proveedores", id);
             }
-            _context.Proveedores.Remove(proveedor);
+            proveedor.Eliminar();
         }
 
         #endregion

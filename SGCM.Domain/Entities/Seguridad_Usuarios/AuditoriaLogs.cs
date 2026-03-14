@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
     [Table("Auditoria_Logs")]
-    public class AuditoriaLogs : DeletableEntity
+    public class AuditoriaLogs : BaseEntity
     {
         public int UsuarioId { get; private set; }
         public string Accion { get; private set; }
