@@ -6,6 +6,7 @@ using SGCM.Domain.Entities.Seguridad_Usuarios;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Services.Interfaces.ISeguridad_Usuarios;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace SGCM.Application.Services.Seguridad_Usuarios
 {
@@ -15,20 +16,22 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly IUsuarioDomainService _usuarioDomainService;
         private readonly ITokenService _tokenService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger, IUsuarioDomainService usuarioDomain, ITokenService tokenService)
+        public UsuarioAppService(IUsuarioRepository repository, IAuditoriaLogger auditoriaLogger, IUsuarioDomainService usuarioDomain, ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _repository = repository;
             _auditoriaLogger = auditoriaLogger;
             _usuarioDomainService = usuarioDomain;
             _tokenService = tokenService;
+            _unitOfWork = unitOfWork;
         }
 
 
         public async Task<UsuarioResponseDto> CrearAsync(CrearUsuarioDto dto)
         {
             await _usuarioDomainService.ValidarEmailUnicoAsync(dto.email);
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.password, workFactor: 12);
+            var passwordHash = BCryptNet.HashPassword(dto.password, workFactor: 12);
 
             var usuario = new Usuario
             (
@@ -41,6 +44,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
+
+            await _unitOfWork.CommitAsync();
 
             return new UsuarioResponseDto
             {
@@ -68,6 +73,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Usuario", $"Se actualizó el usuario con ID: {usuario.Id}");
 
+            await _unitOfWork.CommitAsync();
+
             return new UsuarioResponseDto
             {
                 Id = usuario.Id,
@@ -83,17 +90,19 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             if (usuario is null)
                 throw new ExcepcionNoEncontrado("Usuario", id);
 
-            bool passwordValida = BCrypt.Net.BCrypt.Verify(dto.PasswordActual, usuario.PasswordHash);
+            bool passwordValida = BCryptNet.Verify(dto.PasswordActual, usuario.PasswordHash);
             if(!passwordValida)
                 throw new ExcepcionReglaNegocio("La contraseña actual es incorrecta", "PASSWORD_INCORRECTA");
 
-            var nuevoPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NuevoPassword, workFactor: 12);
+            var nuevoPasswordHash = BCryptNet.HashPassword(dto.NuevoPassword, workFactor: 12);
             usuario.ActualizarPassword(nuevoPasswordHash);
 
             await _repository.ActualizarAsync(usuario);
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "CambiarPassword", "Usuario", $"Se cambió el password del usuario con ID: {usuario.Id}");
+
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<bool> EliminarAsync(int id)
@@ -110,6 +119,9 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
+            
+            await _unitOfWork.CommitAsync();
+            
             return true;
 
 

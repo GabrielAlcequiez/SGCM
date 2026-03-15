@@ -4,6 +4,7 @@ using SGCM.Application.Interfaces.Pacientes;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using SGCM.Domain.Services.Interfaces.IPacientes;
 
 namespace SGCM.Application.Services.Pacientes
@@ -14,12 +15,14 @@ namespace SGCM.Application.Services.Pacientes
         private readonly IPacienteDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
-        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger, IPacienteDomainService domainService, ITokenService tokenService)
+        private readonly IUnitOfWork _unitOfWork;
+        public PacienteAppService(IPacienteRepository repository, IAuditoriaLogger auditoriaLogger, IPacienteDomainService domainService, ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _auditoriaLogger = auditoriaLogger;
             _repository = repository;
             _domainService = domainService;
             _tokenService = tokenService;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -40,6 +43,8 @@ namespace SGCM.Application.Services.Pacientes
             await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
+
+            await _unitOfWork.CommitAsync();
 
             return new PacienteResponseDto
             {
@@ -122,6 +127,8 @@ namespace SGCM.Application.Services.Pacientes
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Paciente", $"Paciente actualizado con ID: {paciente.Id}");
 
+            await _unitOfWork.CommitAsync();
+
             return new PacienteResponseDto
             {
                 Id = paciente.Id,
@@ -151,6 +158,9 @@ namespace SGCM.Application.Services.Pacientes
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
+            
+            await _unitOfWork.CommitAsync();
+            
             return true;
         }
     }

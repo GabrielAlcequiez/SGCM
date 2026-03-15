@@ -15,12 +15,14 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
         private readonly IAdministradoresDomainService _domainService;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
-        public AdministradorAppService(IAdministradoresRepository repository, IAdministradoresDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService)
+        private readonly IUnitOfWork _unitOfWork;
+        public AdministradorAppService(IAdministradoresRepository repository, IAdministradoresDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _repository = repository;
             _domainService = domainService;
             _auditoriaLogger = auditoriaLogger;
             _tokenService = tokenService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<AdministradorResponseDto> CrearAsync(CrearAdministradorDto dto)
@@ -36,6 +38,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.AgregarAsync(nuevoAdministrador);
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
+
+            await _unitOfWork.CommitAsync();
 
             return new AdministradorResponseDto
             {
@@ -60,6 +64,9 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Administrador", $"Actualización del administrador con ID {administradorExistente.Id}");
+            
+            await _unitOfWork.CommitAsync();
+            
             return new AdministradorResponseDto
             {
                 Id = administradorExistente.Id,
@@ -80,6 +87,8 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");
+
+            await _unitOfWork.CommitAsync();
 
             return true;
         }

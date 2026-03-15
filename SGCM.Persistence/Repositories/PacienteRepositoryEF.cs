@@ -10,8 +10,7 @@ namespace SGCM.Persistence.Repositories
     {
         private readonly SGCMContext _context;
 
-        public PacienteRepositoryEF(SGCMContext context) =>
-            _context = context;
+        public PacienteRepositoryEF(SGCMContext context) => _context = context;
         
 
         #region Metodos de Consulta

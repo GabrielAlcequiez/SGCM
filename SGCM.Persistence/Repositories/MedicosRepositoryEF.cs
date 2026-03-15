@@ -8,10 +8,8 @@ namespace SGCM.Persistence.Repositories
 {
     public sealed class MedicosRepositoryEF : IMedicoRepository
     {
-
         private readonly SGCMContext _context;
-        public MedicosRepositoryEF(SGCMContext context) =>
-            _context = context;
+        public MedicosRepositoryEF(SGCMContext context) => _context = context;
 
 
         #region Metodos de Registro

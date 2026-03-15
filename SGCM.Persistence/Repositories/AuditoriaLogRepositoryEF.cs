@@ -10,8 +10,7 @@ namespace SGCM.Persistence.Repositories
     {
 
         private readonly SGCMContext _context;
-        public AuditoriaLogRepositoryEF(SGCMContext context) =>
-            _context = context;
+        public AuditoriaLogRepositoryEF(SGCMContext context) => _context = context;
         
        
         #region Metodos de Registro

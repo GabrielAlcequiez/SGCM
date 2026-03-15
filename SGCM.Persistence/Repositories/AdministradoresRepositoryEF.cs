@@ -9,8 +9,7 @@ namespace SGCM.Persistence.Repositories
     public sealed class AdministradoresRepositoryEF : IAdministradoresRepository
     {
         private readonly SGCMContext _context;
-        public AdministradoresRepositoryEF(SGCMContext context) =>
-            _context = context;
+        public AdministradoresRepositoryEF(SGCMContext context) => _context = context;
         
         #region Metodos de Registro
 

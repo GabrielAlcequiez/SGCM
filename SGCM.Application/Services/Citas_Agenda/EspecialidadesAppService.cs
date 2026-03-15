@@ -4,6 +4,7 @@ using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Medicos;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Domain.Services.Interfaces.ICitas;
 
@@ -15,12 +16,14 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IEspecialidadDomainService _domainService;
         private readonly IAuditoriaLogger _logger;
         private readonly ITokenService _tokenService;
-        public EspecialidadesAppService(IEspecialidadesRepository repository, IEspecialidadDomainService domainService, IAuditoriaLogger logger, ITokenService tokenService)
+        private readonly IUnitOfWork _unitOfWork;
+        public EspecialidadesAppService(IEspecialidadesRepository repository, IEspecialidadDomainService domainService, IAuditoriaLogger logger, ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _domainService = domainService;
             _repository = repository;
             _logger = logger;
             _tokenService = tokenService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<EspecialidadesResponseDto> CrearAsync(CrearEspecialidadesDto dto)
@@ -36,6 +39,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             await _repository.AgregarAsync(especialidad);
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _logger.RegistrarAsync(usuarioIdActual, "Crear", "Especialidades", $"Se creó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
+
+            await _unitOfWork.CommitAsync();
 
             return new EspecialidadesResponseDto
             {
@@ -65,6 +70,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _logger.RegistrarAsync(usuarioIdActual, "Actualizar", "Especialidades", $"Se actualizó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
         
+            await _unitOfWork.CommitAsync();
+
             return new EspecialidadesResponseDto
             {
                 Id = especialidad.Id,
@@ -87,6 +94,9 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _logger.RegistrarAsync(usuarioIdActual, "Eliminar", "Especialidades", $"Se eliminó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
+            
+            await _unitOfWork.CommitAsync();
+            
             return true;
         }
 

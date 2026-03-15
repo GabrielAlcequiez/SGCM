@@ -8,10 +8,8 @@ namespace SGCM.Persistence.Repositories
 {
     public sealed class CitasRepositoryEF : ICitaRepository
     {
-
         private readonly SGCMContext _context;
-        public CitasRepositoryEF(SGCMContext context) =>
-            _context = context;
+        public CitasRepositoryEF(SGCMContext context) => _context = context;
 
 
         #region Metodos de Registro

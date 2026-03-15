@@ -5,7 +5,6 @@ namespace SGCM.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-
         private readonly SGCMContext _context;
 
         public UnitOfWork(SGCMContext context)

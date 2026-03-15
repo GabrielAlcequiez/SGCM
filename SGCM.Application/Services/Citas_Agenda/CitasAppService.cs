@@ -5,9 +5,9 @@ using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Citas_Agenda;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Domain.Services.Interfaces.ICitas;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace SGCM.Application.Services.Citas_Agenda
 {
@@ -17,11 +17,12 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly ICitaRepository _citaRepository;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
+        private readonly IUnitOfWork _unitOfWork;
         IMedicoRepository _medicoRepository;
         IPacienteRepository _pacienteRepository;
 
 
-        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService)
+        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _citasDomainService = domainService;
             _citaRepository = repository;
@@ -29,6 +30,7 @@ namespace SGCM.Application.Services.Citas_Agenda
             _medicoRepository = medicoRepository;
             _pacienteRepository = pacienteRepository;
             _tokenService = tokenService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<CitaResponseDto> CrearAsync(CrearCitaDto dto)
@@ -60,6 +62,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                 $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
+
+            await _unitOfWork.CommitAsync();
 
             return new CitaResponseDto
             {
@@ -98,6 +102,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Cita",
                 $"Cita actualizada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {dtoC.FechaHora:dd/MM/yyyy HH:mm}");
 
+            await _unitOfWork.CommitAsync();
+
             return new CitaResponseDto
                 {
                 Id = cita.Id,
@@ -126,6 +132,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Cita",
                 $"Cita eliminada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
+            await _unitOfWork.CommitAsync();
+
             return true;
         }
 
@@ -146,6 +154,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Cancelar", "Cita",
                 $"Cita cancelada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
+
+            await _unitOfWork.CommitAsync();
 
             return true;
         }
@@ -201,6 +211,8 @@ namespace SGCM.Application.Services.Citas_Agenda
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Completar", "Cita",
                 $"Cita completada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
+
+            await _unitOfWork.CommitAsync();
 
             return true;
         }
