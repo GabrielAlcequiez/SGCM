@@ -43,9 +43,9 @@ namespace SGCM.Application.Services.Citas_Agenda
             await _repository.AgregarAsync(dispo);
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             string dia = _domainService.ObtenerNombreDia(dto.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.");
-
             await _unitOfWork.CommitAsync();
+
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.");
 
             return new DisponibilidadResponseDto
             {

@@ -37,9 +37,9 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             );
 
             await _repository.AgregarAsync(nuevoAdministrador);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
-
             await _unitOfWork.CommitAsync();
+
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
 
             return new AdministradorResponseDto
             {

@@ -42,9 +42,9 @@ namespace SGCM.Application.Services.Pacientes
 
             await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
-
             await _unitOfWork.CommitAsync();
+
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
 
             return new PacienteResponseDto
             {

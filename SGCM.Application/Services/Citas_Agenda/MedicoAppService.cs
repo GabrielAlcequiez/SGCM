@@ -42,9 +42,9 @@ namespace SGCM.Application.Services.Citas_Agenda
                 usuarioIdActual);
 
             await _repository.AgregarAsync(medico);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
-
             await _unitOfWork.CommitAsync();
+
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
 
             return new MedicoResponseDto
             {

@@ -60,10 +60,10 @@ namespace SGCM.Application.Services.Citas_Agenda
             );
 
             await _citaRepository.AgregarAsync(cita);
+            await _unitOfWork.CommitAsync();
+
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                 $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
-
-            await _unitOfWork.CommitAsync();
 
             return new CitaResponseDto
             {

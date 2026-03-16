@@ -35,15 +35,15 @@ namespace SGCM.Application.Services.Pacientes
                 dto.CoberturaDefault
             );
 
-            await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
+await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
             await _domainService.EsRNCUnicoAsync(proveedor.RNC);
 
             await _repository.AgregarAsync(proveedor);
 
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
-         
             await _unitOfWork.CommitAsync();
+          
+            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
 
             return new ProveedoresResponseDto
             {

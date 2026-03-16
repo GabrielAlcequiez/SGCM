@@ -38,9 +38,9 @@ namespace SGCM.Application.Services.Citas_Agenda
             
             await _repository.AgregarAsync(especialidad);
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _logger.RegistrarAsync(usuarioIdActual, "Crear", "Especialidades", $"Se creó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
-
             await _unitOfWork.CommitAsync();
+
+            await _logger.RegistrarAsync(usuarioIdActual, "Crear", "Especialidades", $"Se creó la especialidad {especialidad.Nombre} con ID: {especialidad.Id}");
 
             return new EspecialidadesResponseDto
             {
