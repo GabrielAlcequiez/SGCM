@@ -18,7 +18,7 @@ namespace SGCM.Domain.Services
 
         public async Task EsExequaturUnicoAsync(string exequatur)
         {
-            var medicoExistente = _medicoRepository.ObtenerPorExequaturAsync(exequatur);
+            var medicoExistente = await _medicoRepository.ObtenerPorExequaturAsync(exequatur);
             if (medicoExistente is not null)
                 throw new ExcepcionReglaNegocio($"Ya existe un médico registrado con el exequatur: {exequatur}", "EXEQUATUR_YA_EXISTE");
         }

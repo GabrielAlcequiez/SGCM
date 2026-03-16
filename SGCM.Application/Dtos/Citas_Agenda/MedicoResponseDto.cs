@@ -8,5 +8,7 @@
         public string Exequatur { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public int EspecialidadId { get; set; }
+
+        public int UsuarioId { get; set; }
     }
 }

@@ -22,6 +22,8 @@ namespace SGCM.Persistence.Repositories
 
         public async Task<IEnumerable<Paciente>> ObtenerPorTelefonoAsync(string telefono) => await _context.Pacientes.Where(p => p.Telefono == telefono).ToListAsync();
 
+        public async Task<Paciente?> ObtenerPorUsuarioIdAsync(int usuarioId) => await _context.Pacientes.FirstOrDefaultAsync(p => p.UsuarioId == usuarioId);
+
         public async Task<IEnumerable<Paciente>> ObtenerTodosAsync() => await _context.Pacientes.ToListAsync();
         #endregion
 

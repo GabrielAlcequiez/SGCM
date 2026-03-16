@@ -29,7 +29,8 @@ namespace SGCM.Application.Services.Citas_Agenda
 
         public async Task<MedicoResponseDto> CrearAsync(CrearMedicoDto dto)
         {
-            await _domainService.UsuarioYaTienePerfilMedicoAsync(dto.UsuarioId);
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            await _domainService.UsuarioYaTienePerfilMedicoAsync(usuarioIdActual);
             await _domainService.EsExequaturUnicoAsync(dto.Exequatur);
 
             var medico = new Medico
@@ -38,10 +39,9 @@ namespace SGCM.Application.Services.Citas_Agenda
                 dto.Exequatur, 
                 dto.Telefono,
                 dto.EspecialidadId,
-                dto.UsuarioId);
+                usuarioIdActual);
 
             await _repository.AgregarAsync(medico);
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
 
             await _unitOfWork.CommitAsync();
@@ -130,7 +130,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Apellido = medico.Apellido,
                 Exequatur = medico.Exequatur,
                 Telefono = medico.Telefono,
-                EspecialidadId = medico.EspecialidadId
+                EspecialidadId = medico.EspecialidadId,
+                UsuarioId = medico.UsuarioId
             };
         }
 
@@ -145,7 +146,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Apellido = m.Apellido,
                 Exequatur = m.Exequatur,
                 Telefono = m.Telefono,
-                EspecialidadId = m.EspecialidadId
+                EspecialidadId = m.EspecialidadId,
+                UsuarioId = m.UsuarioId
             }).ToList();
         }
     }

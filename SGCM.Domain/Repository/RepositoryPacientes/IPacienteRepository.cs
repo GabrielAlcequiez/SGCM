@@ -7,5 +7,6 @@ namespace SGCM.Domain.Entities.Pacientes
             Task<IEnumerable<Paciente>> ObtenerPorNombreAsync(string nombre);
             Task<IEnumerable<Paciente>> ObtenerPorApellidoAsync(string apellido);
             Task<IEnumerable<Paciente>> ObtenerPorTelefonoAsync(string telefono);
+            Task<Paciente?> ObtenerPorUsuarioIdAsync(int usuarioId);
     }
 }

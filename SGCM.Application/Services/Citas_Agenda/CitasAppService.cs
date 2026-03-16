@@ -35,13 +35,15 @@ namespace SGCM.Application.Services.Citas_Agenda
 
         public async Task<CitaResponseDto> CrearAsync(CrearCitaDto dto)
         {
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+
             var medico = await _medicoRepository.ObtenerPorIdAsync(dto.MedicoId);
             if (medico is null)
                 throw new ExcepcionNoEncontrado("Medico", dto.MedicoId);
 
-            var paciente = await _pacienteRepository.ObtenerPorIdAsync(dto.PacienteId);
+            var paciente = await _pacienteRepository.ObtenerPorUsuarioIdAsync(usuarioIdActual);
             if (paciente is null)
-                throw new ExcepcionNoEncontrado("Paciente", dto.PacienteId);
+                throw new ExcepcionNoEncontrado("Paciente", usuarioIdActual);
 
             if (dto.FechaHora < DateTime.Now)
                 throw new ExcepcionReglaNegocio("No se pueden programar citas en el pasado.", "FECHA_INVALIDAD");
@@ -53,13 +55,11 @@ namespace SGCM.Application.Services.Citas_Agenda
             var cita = new Citas(
                 dto.FechaHora,
                 dto.Motivo,
-                dto.PacienteId,
+                paciente.Id,
                 dto.MedicoId
             );
 
             await _citaRepository.AgregarAsync(cita);
-
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                 $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
 
