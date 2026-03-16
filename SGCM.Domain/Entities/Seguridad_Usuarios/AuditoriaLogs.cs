@@ -13,6 +13,8 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
         public DateTime Fecha { get; private set; }
         public string Detalles { get; private set; }
 
+        protected AuditoriaLogs() { }
+
         public AuditoriaLogs(int usuarioId, string accion, string entidadAfectada, string detalles)
         {
             UsuarioId = usuarioId;
@@ -25,7 +27,7 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            if (UsuarioId <= 0)
+            if (UsuarioId < 0)
                 throw new ExcepcionValidacion("El log debe estar asociado a un usuario.");
             if (EntidadAfectada.Length > 50)
                 throw new ExcepcionValidacion("EntidadAfectada no puede sobrepasar los 50 caracteres");

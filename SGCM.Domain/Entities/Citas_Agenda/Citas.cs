@@ -12,6 +12,8 @@ namespace SGCM.Domain.Entities.Citas_Agenda
         public int MedicoId { get; private set; }
         public DateTime FechaCreacion { get; private set; }
 
+        protected Citas() { }
+
         public Citas(DateTime fechaHora, string motivo, int pacienteId, int medicoId)
         {
             

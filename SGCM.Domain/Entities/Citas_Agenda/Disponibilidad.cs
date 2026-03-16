@@ -11,6 +11,8 @@ namespace SGCM.Domain.Entities.Medicos
         public bool EsDiaLibre { get; private set; }
         public int MedicoId { get; private set; }
 
+        protected Disponibilidad() { }
+
         public Disponibilidad(int diaSemana, TimeSpan horaInicio, TimeSpan horaFin, bool esDiaLibre, int medicoId)
         {
             DiaSemana = diaSemana;

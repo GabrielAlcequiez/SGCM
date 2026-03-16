@@ -10,7 +10,9 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         public int UsuarioId { get; private set; }
 
-        public string Cargo { get; private set; } 
+        public string Cargo { get; private set; }
+
+        protected Administradores() { }
 
         public Administradores(int usuarioId, string nombre, string apellido, string cargo)
         {

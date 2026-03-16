@@ -14,6 +14,8 @@ namespace SGCM.Domain.Entities.Medicos
         public int EspecialidadId { get; private set; }
         public int UsuarioId { get; private set; }
 
+        protected Medico() { }
+
         public Medico(string nombre, string apellido, string exequatur, string telefono, int especialidadId, int usuarioId)
         {
             Nombre = nombre;

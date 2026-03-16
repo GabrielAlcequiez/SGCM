@@ -49,12 +49,21 @@ namespace SGCM.Infraestructure.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
 
+        // Permite que en la creación del usuario no haga kabum, ya que no hay un usuario autenticado aún, pero en otros casos sí se requiere un usuario autenticado.
         public int ObtenerUsuarioIdActual()
+        {
+            return ObtenerUsuarioIdActual(permitirAnonimo: false);
+        }
+
+        public int ObtenerUsuarioIdActual(bool permitirAnonimo)
         {
             var usuarioIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!int.TryParse(usuarioIdClaim, out var usuarioId) || usuarioId <= 0)
             {
+                if (permitirAnonimo)
+                    return 0;
+                
                 throw new UnauthorizedAccessException("No se pudo identificar al usuario autenticado actual.");
             }
 

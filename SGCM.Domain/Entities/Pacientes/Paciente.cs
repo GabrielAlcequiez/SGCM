@@ -17,7 +17,10 @@ namespace SGCM.Domain.Entities.Pacientes
         public string? NSS { get; private set; }
         public int UsuarioId { get; private set; }
 
-
+        protected Paciente()
+        {
+            
+        }
         public Paciente(string nombre, string apellido, string telefono, string direccion, DateOnly fechaNacimiento, int? proveedorId, string? nss, int usuarioid)
         {
             Nombre = nombre;

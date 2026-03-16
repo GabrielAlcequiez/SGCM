@@ -12,6 +12,11 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
         public string Rol { get; private set; }
         public DateTime FechaRegistro { get; private set; }
 
+        protected Usuario()
+        {
+            
+        }
+
         public Usuario(string email, string passwordHash, string rol)
         {
             Email = email;

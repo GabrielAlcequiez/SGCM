@@ -8,6 +8,8 @@ namespace SGCM.Domain.Entities.Medicos
         public string Nombre { get; private set; }
         public string Descripcion { get; private set; }
 
+        protected Especialidades() { }
+
         public Especialidades(string nombre, string descripcion)
         {
             Nombre = nombre;

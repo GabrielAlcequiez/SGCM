@@ -42,7 +42,7 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.AgregarAsync(usuario);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual(permitirAnonimo: true);
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
 
             await _unitOfWork.CommitAsync();
@@ -57,7 +57,7 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
         }
 
-        public async Task<UsuarioResponseDto> ActualizarAsync(int id, CrearUsuarioDto dto)
+        public async Task<UsuarioResponseDto> ActualizarAsync(int id, ActualizarUsuarioDto dto)
         {
             var usuario = await _repository.ObtenerPorIdAsync(id);
             if (usuario is null)

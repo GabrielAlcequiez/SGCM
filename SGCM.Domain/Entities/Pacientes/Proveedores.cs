@@ -10,6 +10,8 @@ namespace SGCM.Domain.Entities.Pacientes
         public string Telefono { get; private set; }
         public decimal CoberturaDefault { get; private set; }
 
+        protected Proveedores() { }
+
         public Proveedores(string nombre, string rnc, string telefono, decimal coberturaDefault)
         {
 
