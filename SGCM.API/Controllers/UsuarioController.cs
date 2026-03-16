@@ -21,6 +21,7 @@ namespace SGCM.Api.Controllers
             _usuarioAppService = usuarioAppService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<UsuarioResponseDto>> GetAll()
         {
