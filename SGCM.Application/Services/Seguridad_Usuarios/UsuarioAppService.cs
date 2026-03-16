@@ -123,8 +123,6 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             await _unitOfWork.CommitAsync();
             
             return true;
-
-
         }
 
         public async Task<UsuarioResponseDto> LeerAsync(int id)

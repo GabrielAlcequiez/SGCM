@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SGCM.Application.Dtos.Seguridad_Usuarios;
 using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Application.Services.Seguridad_Usuarios;
@@ -10,6 +11,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsuarioController : ControllerBase
     {
         public IUsuarioAppService _usuarioAppService { get; }
@@ -41,6 +43,7 @@ namespace SGCM.Api.Controllers
             return Ok(usuarios);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<UsuarioResponseDto>> Post([FromBody] CrearUsuarioDto dto)
         {
