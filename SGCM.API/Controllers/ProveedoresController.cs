@@ -6,6 +6,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    // [Authorize]
     public class ProveedoresController : ControllerBase
     {
         private readonly IProveedoresAppService _proveedoresAppService;

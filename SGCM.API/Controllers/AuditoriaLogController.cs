@@ -7,7 +7,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AuditoriaLogController : ControllerBase
     {
         private readonly IAuditoriaLogAppService _auditoriaLogAppService;

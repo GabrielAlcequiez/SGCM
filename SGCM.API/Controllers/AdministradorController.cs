@@ -7,7 +7,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AdministradorController : ControllerBase
     {
         private readonly IAdministradorAppService _administradorAppService;

@@ -50,9 +50,22 @@ namespace SGCM.Infraestructure.Services
         }
 
         // Permite que en la creación del usuario no haga kabum, ya que no hay un usuario autenticado aún, pero en otros casos sí se requiere un usuario autenticado.
+        // En desarrollo (fase actual) retorna si no hay token, asi se evita el kabum, pero en producción sí lanza la excepción.
         public int ObtenerUsuarioIdActual()
         {
-            return ObtenerUsuarioIdActual(permitirAnonimo: false);
+            var usuarioIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(usuarioIdClaim, out var usuarioId) || usuarioId <= 0)
+            {
+                var entorno = _configuration["ASPNETCORE_ENVIRONMENT"];
+                if (entorno == "Development")
+                {
+                    return 0;
+                }
+                throw new UnauthorizedAccessException("No se pudo identificar al usuario autenticado actual.");
+            }
+
+            return usuarioId;
         }
 
         public int ObtenerUsuarioIdActual(bool permitirAnonimo)
@@ -62,7 +75,14 @@ namespace SGCM.Infraestructure.Services
             if (!int.TryParse(usuarioIdClaim, out var usuarioId) || usuarioId <= 0)
             {
                 if (permitirAnonimo)
+                {
+                    var entorno = _configuration["ASPNETCORE_ENVIRONMENT"];
+                    if (entorno == "Development")
+                    {
+                        return 0;
+                    }
                     return 0;
+                }
                 
                 throw new UnauthorizedAccessException("No se pudo identificar al usuario autenticado actual.");
             }

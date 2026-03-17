@@ -6,6 +6,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    // [Authorize]
     public class DisponibilidadController : ControllerBase
     {
         private readonly IDisponibilidadAppService _disponibilidadAppService;

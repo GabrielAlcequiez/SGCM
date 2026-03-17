@@ -11,7 +11,7 @@ namespace SGCM.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class UsuarioController : ControllerBase
     {
         public IUsuarioAppService _usuarioAppService { get; }
