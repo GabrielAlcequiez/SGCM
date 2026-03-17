@@ -17,6 +17,7 @@ public static class DependenciasComunes
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAutenticacionService, LoginService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<INotificacionService, NotificacionService>();
 
         return services;
     }

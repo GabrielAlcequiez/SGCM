@@ -18,11 +18,11 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificacionService _notificacionService;
         IMedicoRepository _medicoRepository;
         IPacienteRepository _pacienteRepository;
 
-
-        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork)
+        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork, INotificacionService notificacionService)
         {
             _citasDomainService = domainService;
             _citaRepository = repository;
@@ -31,6 +31,7 @@ namespace SGCM.Application.Services.Citas_Agenda
             _pacienteRepository = pacienteRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
+            _notificacionService = notificacionService;
         }
 
         public async Task<CitaResponseDto> CrearAsync(CrearCitaDto dto)
@@ -65,6 +66,12 @@ namespace SGCM.Application.Services.Citas_Agenda
             await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                 $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
 
+            await _notificacionService.EnviarAsync(
+                new[] { paciente.UsuarioId },
+                "CitaAgendada",
+                $"Su cita ha sido programada para el {cita.FechaHora:dd/MM/yyyy HH:mm} con el/la Dr/Dra. {medico.Nombre} {medico.Apellido}."
+            );
+
             return new CitaResponseDto
             {
                 Id = cita.Id,
@@ -74,8 +81,6 @@ namespace SGCM.Application.Services.Citas_Agenda
                 PacienteId = cita.PacienteId, 
                 Estado = cita.Estado
             };
-
-
         }
 
         public async Task<CitaResponseDto> ActualizarAsync(int id, CrearCitaDto dtoC)
@@ -103,6 +108,17 @@ namespace SGCM.Application.Services.Citas_Agenda
                 $"Cita actualizada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {dtoC.FechaHora:dd/MM/yyyy HH:mm}");
 
             await _unitOfWork.CommitAsync();
+
+            var pacienteActualizado = await _pacienteRepository.ObtenerPorIdAsync(cita.PacienteId);
+            var medicoActualizado = await _medicoRepository.ObtenerPorIdAsync(cita.MedicoId);
+            if (pacienteActualizado is not null && medicoActualizado is not null)
+            {
+                await _notificacionService.EnviarAsync(
+                    new[] { pacienteActualizado.UsuarioId, medicoActualizado.UsuarioId },
+                    "CitaModificada",
+                    $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido modificada."
+                );
+            }
 
             return new CitaResponseDto
                 {
@@ -156,6 +172,17 @@ namespace SGCM.Application.Services.Citas_Agenda
                 $"Cita cancelada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
             await _unitOfWork.CommitAsync();
+
+            var pacienteCancelado = await _pacienteRepository.ObtenerPorIdAsync(cita.PacienteId);
+            var medicoCancelado = await _medicoRepository.ObtenerPorIdAsync(cita.MedicoId);
+            if (pacienteCancelado is not null && medicoCancelado is not null)
+            {
+                await _notificacionService.EnviarAsync(
+                    new[] { pacienteCancelado.UsuarioId, medicoCancelado.UsuarioId },
+                    "CitaCancelada",
+                    $"La cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido cancelada."
+                );
+            }
 
             return true;
         }
@@ -213,6 +240,16 @@ namespace SGCM.Application.Services.Citas_Agenda
                 $"Cita completada para el paciente {cita.PacienteId} con el Dr. {cita.MedicoId} el {cita.FechaHora}");
 
             await _unitOfWork.CommitAsync();
+
+            var pacienteCompletado = await _pacienteRepository.ObtenerPorIdAsync(cita.PacienteId);
+            if (pacienteCompletado is not null)
+            {
+                await _notificacionService.EnviarAsync(
+                    new[] { pacienteCompletado.UsuarioId },
+                    "CitaCompletada",
+                    $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido completada."
+                );
+            }
 
             return true;
         }
