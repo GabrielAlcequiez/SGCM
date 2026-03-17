@@ -17,18 +17,25 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
-        public DisponibilidadAppService(IDisponibilidadRepository repository, IDisponibilidadDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService, IUnitOfWork unitOfWork)
+        private readonly IMedicoRepository _medicoRepository;
+        public DisponibilidadAppService(IDisponibilidadRepository repository, IDisponibilidadDomainService domainService, IAuditoriaLogger auditoriaLogger, ITokenService tokenService, IUnitOfWork unitOfWork, IMedicoRepository medicoRepository)
         {
             _repository = repository;
             _domainService = domainService;
             _auditoriaLogger = auditoriaLogger;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
+            _medicoRepository = medicoRepository;
         }
 
         public async Task<DisponibilidadResponseDto> CrearAsync(CrearDisponibilidadDto dto)
         {
-            await _domainService.ValidarDisponibilidadUnicaPorDiaAsync(dto.IdMedico, dto.DiaSemana);
+            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+            var medico = await _medicoRepository.ObtenerPorUsuarioIdAsync(usuarioIdActual);
+            if (medico is null)
+                throw new ExcepcionNoEncontrado("Medico", usuarioIdActual);
+
+            await _domainService.ValidarDisponibilidadUnicaPorDiaAsync(medico.Id, dto.DiaSemana);
             _domainService.ValidarConsistenciaHorario(dto.HoraInicio, dto.HoraFin, dto.EsDiaLibre);
 
             var dispo = new Disponibilidad
@@ -37,11 +44,10 @@ namespace SGCM.Application.Services.Citas_Agenda
                 dto.HoraInicio,
                 dto.HoraFin,
                 dto.EsDiaLibre,
-                dto.IdMedico
+                medico.Id
             );
 
             await _repository.AgregarAsync(dispo);
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
             string dia = _domainService.ObtenerNombreDia(dto.DiaSemana);
             await _unitOfWork.CommitAsync();
 
@@ -68,7 +74,7 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             if (dispo.DiaSemana != dtoC.DiaSemana)
             {
-                await _domainService.ValidarDisponibilidadUnicaPorDiaAsync(dtoC.IdMedico, dtoC.DiaSemana);
+                await _domainService.ValidarDisponibilidadUnicaPorDiaAsync(dispo.MedicoId, dtoC.DiaSemana);
             }
 
             _domainService.ValidarConsistenciaHorario(dtoC.HoraInicio, dtoC.HoraFin, dtoC.EsDiaLibre);

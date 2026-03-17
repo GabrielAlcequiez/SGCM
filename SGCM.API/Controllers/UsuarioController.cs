@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using SGCM.Application.Dtos.Seguridad_Usuarios;
 using SGCM.Application.Interfaces.Seguridad_Usuarios;
-using SGCM.Application.Services.Seguridad_Usuarios;
-using SGCM.Domain.Exceptions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,7 +18,6 @@ namespace SGCM.Api.Controllers
             _usuarioAppService = usuarioAppService;
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<UsuarioResponseDto>> GetAll()
         {
@@ -44,7 +40,6 @@ namespace SGCM.Api.Controllers
             return Ok(usuarios);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<UsuarioResponseDto>> Post([FromBody] CrearUsuarioDto dto)
         {

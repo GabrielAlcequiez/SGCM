@@ -2,7 +2,6 @@
 {
     public class CrearDisponibilidadDto
     {
-        public int IdMedico { get; set; }
         public int DiaSemana { get; set; }
         public TimeSpan HoraInicio { get; set; }
         public TimeSpan HoraFin { get; set; }

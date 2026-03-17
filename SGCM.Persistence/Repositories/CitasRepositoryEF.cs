@@ -62,9 +62,11 @@ namespace SGCM.Persistence.Repositories
 
         public async Task<bool> ExisteCitaEnDiaSemanaAsync(int medicoId, int diaSemana)
         {
+            var fechaBaseDomingo = new DateTime(1900, 1, 7);
+
             return await _context.Citas
                 .AnyAsync(c => c.MedicoId == medicoId
-                          && (int)c.FechaHora.DayOfWeek == diaSemana
+                          && (EF.Functions.DateDiffDay(fechaBaseDomingo, c.FechaHora) % 7) == diaSemana
                           && c.Estado != 3);
         }
 

@@ -40,7 +40,7 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
                 throw new ExcepcionValidacion("El cargo no puede tener más de 50 caracteres.");
             }
 
-            if (UsuarioId <= 0)
+            if (UsuarioId < 0)
                 throw new ExcepcionValidacion("El ID debe ser valido.");
 
         }

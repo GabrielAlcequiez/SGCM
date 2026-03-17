@@ -79,7 +79,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Motivo = cita.Motivo,
                 MedicoId = cita.MedicoId,
                 PacienteId = cita.PacienteId, 
-                Estado = cita.Estado
+                Estado = cita.Estado,
+                FechaCreacion = cita.FechaCreacion
             };
         }
 
@@ -127,7 +128,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Motivo = cita.Motivo,
                 MedicoId = cita.MedicoId,
                 PacienteId = cita.PacienteId,
-                Estado = cita.Estado
+                Estado = cita.Estado,
+                FechaCreacion = cita.FechaCreacion
             };
 
         }
@@ -201,7 +203,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Motivo = cita.Motivo,
                 MedicoId = cita.MedicoId,
                 PacienteId = cita.PacienteId,
-                Estado = cita.Estado
+                Estado = cita.Estado,
+                FechaCreacion = cita.FechaCreacion
             };
 
         }
@@ -216,7 +219,8 @@ namespace SGCM.Application.Services.Citas_Agenda
                 Motivo = cita.Motivo,
                 MedicoId = cita.MedicoId,
                 PacienteId = cita.PacienteId,
-                Estado = cita.Estado
+                Estado = cita.Estado,
+                FechaCreacion = cita.FechaCreacion
             }).ToList();
         }
 
