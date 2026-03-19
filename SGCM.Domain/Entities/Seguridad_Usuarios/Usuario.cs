@@ -1,6 +1,7 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
@@ -28,8 +29,9 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            if (string.IsNullOrEmpty(Email) || !Email.Contains("@"))
-                throw new ExcepcionValidacion("Email inválido.");
+            var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            if (string.IsNullOrEmpty(Email) || !emailRegex.IsMatch(Email))
+                throw new ExcepcionValidacion("El formato del email es inválido.");
             if (Email.Length > 100)
                 throw new ExcepcionValidacion("El email no puede tener más de 100 caracteres.");
 
