@@ -1,5 +1,6 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
@@ -27,21 +28,15 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            if (UsuarioId < 0)
-                throw new ExcepcionValidacion("El log debe estar asociado a un usuario.");
-            if (EntidadAfectada.Length > 50)
-                throw new ExcepcionValidacion("EntidadAfectada no puede sobrepasar los 50 caracteres");
-            if(string.IsNullOrWhiteSpace(EntidadAfectada))
-                throw new ExcepcionValidacion("Error, campo de entidad afectada vacio.");
+            ValidacionBase<AuditoriaLogs>.IdValido(UsuarioId, "UsuarioId");
 
-            if(Accion.Length > 50)
-                throw new ExcepcionValidacion("Accion no puede sobrepasar los 50 caracteres");
-            if (string.IsNullOrWhiteSpace(Accion))
-                throw new ExcepcionValidacion("Error, campo de acción vacio.");
-            
-            if(string.IsNullOrEmpty(Detalles))
-                throw new ExcepcionValidacion("Error, campo de detalles vacio.");
+            ValidacionBase<AuditoriaLogs>.Requerido(EntidadAfectada, "EntidadAfectada");
+            ValidacionBase<AuditoriaLogs>.Longitud(EntidadAfectada, 50, "EntidadAfectada");
 
+            ValidacionBase<AuditoriaLogs>.Requerido(Accion, "Accion");
+            ValidacionBase<AuditoriaLogs>.Longitud(Accion, 50, "Accion");
+
+            ValidacionBase<AuditoriaLogs>.Requerido(Detalles, "Detalles");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SGCM.Domain.Entities.Pacientes
@@ -36,35 +37,22 @@ namespace SGCM.Domain.Entities.Pacientes
 
         protected override void ValidarEntradaDatos()
         {
-            if (string.IsNullOrEmpty(Nombre))
-                throw new ExcepcionValidacion("El nombre no puede estar vacío.");
-            if (Nombre.Length > 50)
-                throw new ExcepcionValidacion("El nombre no puede tener más de 50 caracteres.");
+            ValidacionBase<Paciente>.Requerido(Nombre, "Nombre");
+            ValidacionBase<Paciente>.Longitud(Nombre, 50, "Nombre");
 
-            if (string.IsNullOrEmpty(Apellido))
-                throw new ExcepcionValidacion("El apellido no puede estar vacío.");
-            if (Apellido.Length > 50)
-                throw new ExcepcionValidacion("El apellido no puede tener más de 50 caracteres.");
+            ValidacionBase<Paciente>.Requerido(Apellido, "Apellido");
+            ValidacionBase<Paciente>.Longitud(Apellido, 50, "Apellido");
 
-            if (string.IsNullOrEmpty(Telefono))
-                throw new ExcepcionValidacion("El teléfono no puede estar vacío.");
-            if (Telefono.Length > 20)
-                throw new ExcepcionValidacion("El teléfono no puede tener más de 20 caracteres.");
+            ValidacionBase<Paciente>.Requerido(Telefono, "Telefono");
+            ValidacionBase<Paciente>.Longitud(Telefono, 20, "Telefono");
+            ValidacionBase<Paciente>.Telefono(Telefono);
 
-            if (string.IsNullOrEmpty(Direccion))
-                throw new ExcepcionValidacion("La dirección no puede estar vacía.");
-            if (Direccion.Length > 200)
-                throw new ExcepcionValidacion("La dirección no puede tener más de 200 caracteres.");
+            ValidacionBase<Paciente>.Requerido(Direccion, "Direccion");
+            ValidacionBase<Paciente>.Longitud(Direccion, 200, "Direccion");
 
-            if (FechaNacimiento > DateOnly.FromDateTime(DateTime.Now))
-            {
-                throw new ExcepcionValidacion("La fecha de nacimiento no puede ser en el futuro.");
-            }
+            ValidacionBase<Paciente>.FechaNoFutura(FechaNacimiento, "Fecha de nacimiento");
 
-            if (UsuarioId <= 0)
-            {
-                throw new ExcepcionValidacion("El ID debe ser valido.");
-            }
+            ValidacionBase<Paciente>.IdValido(UsuarioId, "UsuarioId");
         }
 
         public void Actualizar(string nombre, string apellido, string telefono,

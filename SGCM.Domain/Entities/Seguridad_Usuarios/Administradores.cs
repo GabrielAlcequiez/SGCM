@@ -1,5 +1,6 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
@@ -25,24 +26,16 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            if (Nombre.Length > 50)
-                throw new ExcepcionValidacion("El nombre no puede tener más de 50 caracteres.");
-            if (string.IsNullOrWhiteSpace(Nombre))
-                throw new ExcepcionValidacion("El nombre no puede estar vacío.");
+            ValidacionBase<Administradores>.Requerido(Nombre, "Nombre");
+            ValidacionBase<Administradores>.Longitud(Nombre, 50, "Nombre");
 
-            if (string.IsNullOrWhiteSpace(Apellido))
-                throw new ExcepcionValidacion("El apellido no puede estar vacío.");
-            if (Apellido.Length > 50)
-                throw new ExcepcionValidacion("El apellido no puede tener más de 50 caracteres.");
+            ValidacionBase<Administradores>.Requerido(Apellido, "Apellido");
+            ValidacionBase<Administradores>.Longitud(Apellido, 50, "Apellido");
 
-            if (Cargo.Length > 50)
-            {
-                throw new ExcepcionValidacion("El cargo no puede tener más de 50 caracteres.");
-            }
+            ValidacionBase<Administradores>.Requerido(Cargo, "Cargo");
+            ValidacionBase<Administradores>.Longitud(Cargo, 50, "Cargo");
 
-            if (UsuarioId < 0)
-                throw new ExcepcionValidacion("El ID debe ser valido.");
-
+            ValidacionBase<Administradores>.IdValido(UsuarioId, "UsuarioId");
         }
 
         public void Actualizar(string nombre, string apellido, string? cargo)

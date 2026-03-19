@@ -1,5 +1,6 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 
 namespace SGCM.Domain.Entities.Medicos
 {
@@ -25,12 +26,11 @@ namespace SGCM.Domain.Entities.Medicos
 
         protected override void ValidarEntradaDatos()
         {
-            if (DiaSemana < 0 || DiaSemana> 6)
+            if (DiaSemana < 0 || DiaSemana > 6)
                 throw new ExcepcionValidacion("El día de la semana debe estar entre 0 (Domingo) y 6 (Sábado).");
-            if (!EsDiaLibre && HoraFin<= HoraInicio)
+            if (!EsDiaLibre && HoraFin <= HoraInicio)
                 throw new ExcepcionValidacion("La hora de fin debe ser mayor que la hora de inicio para días no libres.");
-            if (MedicoId <= 0)
-                throw new ExcepcionValidacion("Debe estar asociada a un médico válido.");
+            ValidacionBase<Disponibilidad>.IdValido(MedicoId, "MedicoId");
         }
 
         public void Actualizar(int diaSemana, TimeSpan horaInicio, TimeSpan horaFin, bool esDiaLibre)

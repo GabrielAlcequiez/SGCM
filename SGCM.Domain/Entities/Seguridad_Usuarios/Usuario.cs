@@ -1,7 +1,7 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.RegularExpressions;
 
 namespace SGCM.Domain.Entities.Seguridad_Usuarios
 {
@@ -29,16 +29,12 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-            if (string.IsNullOrEmpty(Email) || !emailRegex.IsMatch(Email))
-                throw new ExcepcionValidacion("El formato del email es inválido.");
-            if (Email.Length > 100)
-                throw new ExcepcionValidacion("El email no puede tener más de 100 caracteres.");
+            ValidacionBase<Usuario>.Requerido(Email, "Email");
+            ValidacionBase<Usuario>.Longitud(Email, 100, "Email");
+            ValidacionBase<Usuario>.Email(Email);
 
-            if (string.IsNullOrEmpty(Rol))
-                throw new ExcepcionValidacion("El rol es obligatorio.");
-            if (Rol.Length > 20)
-                throw new ExcepcionValidacion("El rol no puede tener más de 20 caracteres.");
+            ValidacionBase<Usuario>.Requerido(Rol, "Rol");
+            ValidacionBase<Usuario>.Longitud(Rol, 20, "Rol");
         }
 
         public void Actualizar(string email, string rol)

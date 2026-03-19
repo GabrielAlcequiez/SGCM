@@ -1,5 +1,6 @@
 ﻿using SGCM.Domain.Base;
 using SGCM.Domain.Exceptions;
+using SGCM.Domain.Validaciones;
 
 namespace SGCM.Domain.Entities.Citas_Agenda
 {
@@ -28,16 +29,13 @@ namespace SGCM.Domain.Entities.Citas_Agenda
 
         protected override void ValidarEntradaDatos()
         {
-            if (PacienteId <= 0 || MedicoId <= 0)
-                throw new ExcepcionValidacion("Los IDs de paciente y médico deben ser válidos.");
+            ValidacionBase<Citas>.IdValido(PacienteId, "PacienteId");
+            ValidacionBase<Citas>.IdValido(MedicoId, "MedicoId");
 
-            if (FechaHora < DateTime.Now)
-                throw new ExcepcionValidacion("La fecha de la cita no puede ser anterior a la fecha actual.");
+            ValidacionBase<Citas>.FechaHoraNoPasada(FechaHora, "FechaHora");
 
-            if (string.IsNullOrEmpty(Motivo))
-                throw new ExcepcionValidacion("El motivo de la cita no puede estar vacío.");
-            if (Motivo.Length > 200)
-                throw new ExcepcionValidacion("El motivo no puede exceder los 200 caracteres.");
+            ValidacionBase<Citas>.Requerido(Motivo, "Motivo");
+            ValidacionBase<Citas>.Longitud(Motivo, 200, "Motivo");
         }
 
         public void Actualizar(DateTime fechaHora, string motivo)
