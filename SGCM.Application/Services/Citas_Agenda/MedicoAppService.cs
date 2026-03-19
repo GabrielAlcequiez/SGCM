@@ -42,9 +42,10 @@ namespace SGCM.Application.Services.Citas_Agenda
                 usuarioIdActual);
 
             await _repository.AgregarAsync(medico);
-            await _unitOfWork.CommitAsync();
 
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}" );
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () => await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Medico", $"Se creó un nuevo médico con ID: {medico.Id}")
+            );
 
             return new MedicoResponseDto
             {
@@ -78,10 +79,14 @@ namespace SGCM.Application.Services.Citas_Agenda
                 dtoC.EspecialidadId);
 
             await _repository.ActualizarAsync(medico);
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Medico", $"Se actualizó el médico con ID: {medico.Id}" );
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Medico", $"Se actualizó el médico con ID: {medico.Id}");
+                }
+            );
 
             return new MedicoResponseDto
             {
@@ -107,10 +112,13 @@ namespace SGCM.Application.Services.Citas_Agenda
             medico.Eliminar();
             await _repository.ActualizarAsync(medico);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Medico", $"Se eliminó el médico con ID: {id}" );
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Medico", $"Se eliminó el médico con ID: {id}");
+                }
+            );
 
             return true;
         }

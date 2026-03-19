@@ -40,10 +40,13 @@ await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
 
             await _repository.AgregarAsync(proveedor);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _unitOfWork.CommitAsync();
-          
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Proveedores", $"Proveedor creado con ID: {proveedor.Id}");
+                }
+            );
 
             return new ProveedoresResponseDto
             {
@@ -69,10 +72,13 @@ await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
 
             await _repository.ActualizarAsync(proveedor);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Proveedores", $"Proveedor actualizado con ID: {proveedor.Id}");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Proveedores", $"Proveedor actualizado con ID: {proveedor.Id}");
+                }
+            );
 
             return new ProveedoresResponseDto
             {
@@ -95,11 +101,14 @@ await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
             proveedor.Eliminar();
             await _repository.ActualizarAsync(proveedor);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Proveedores", $"Proveedor eliminado con ID: {proveedor.Id}");
-            
-            await _unitOfWork.CommitAsync();
-            
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Proveedores", $"Proveedor eliminado con ID: {proveedor.Id}");
+                }
+            );
+
             return true;
         }
 

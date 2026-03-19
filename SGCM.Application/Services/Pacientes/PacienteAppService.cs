@@ -42,9 +42,10 @@ namespace SGCM.Application.Services.Pacientes
 
             await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
-            await _unitOfWork.CommitAsync();
 
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}");
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () => await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Paciente", $"Paciente creado con ID: {paciente.Id}")
+            );
 
             return new PacienteResponseDto
             {
@@ -124,10 +125,14 @@ namespace SGCM.Application.Services.Pacientes
             );
 
             await _repository.ActualizarAsync(paciente);
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Paciente", $"Paciente actualizado con ID: {paciente.Id}");
 
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Paciente", $"Paciente actualizado con ID: {paciente.Id}");
+                }
+            );
 
             return new PacienteResponseDto
             {
@@ -156,10 +161,13 @@ namespace SGCM.Application.Services.Pacientes
             paciente.Eliminar();
             await _repository.ActualizarAsync(paciente);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
-            
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Paciente", $"Paciente eliminado con ID: {id}");
+                }
+            );
             
             return true;
         }

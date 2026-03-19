@@ -49,9 +49,10 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             await _repository.AgregarAsync(dispo);
             string dia = _domainService.ObtenerNombreDia(dto.DiaSemana);
-            await _unitOfWork.CommitAsync();
 
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.");
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () => await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Disponibilidad", $"Agenda de Disponibilidad creada para dia {dia}.")
+            );
 
             return new DisponibilidadResponseDto
             {
@@ -82,11 +83,14 @@ namespace SGCM.Application.Services.Citas_Agenda
             dispo.Actualizar(dtoC.DiaSemana, dtoC.HoraInicio, dtoC.HoraFin, dtoC.EsDiaLibre);
             await _repository.ActualizarAsync(dispo);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            string dia = _domainService.ObtenerNombreDia(dtoC.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Disponibilidad", $"Disponibilidad ID: {id} actualizada para el médico ID: {dispo.MedicoId} el día {dia}.");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    string dia = _domainService.ObtenerNombreDia(dtoC.DiaSemana);
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Disponibilidad", $"Disponibilidad ID: {id} actualizada para el médico ID: {dispo.MedicoId} el día {dia}.");
+                }
+            );
 
             return new DisponibilidadResponseDto
             {
@@ -109,12 +113,15 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             await _repository.EliminarAsync(id);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            string dia = _domainService.ObtenerNombreDia(dispo.DiaSemana);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Disponibilidad", $"Disponibilidad ID: {id} eliminada para el médico ID: {dispo.MedicoId} el día {dia}.");
-            
-            await _unitOfWork.CommitAsync();
-            
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    string dia = _domainService.ObtenerNombreDia(dispo.DiaSemana);
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Disponibilidad", $"Disponibilidad ID: {id} eliminada para el médico ID: {dispo.MedicoId} el día {dia}.");
+                }
+            );
+
             return true;
         }
 

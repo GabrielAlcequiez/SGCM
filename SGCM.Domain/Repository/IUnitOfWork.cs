@@ -1,7 +1,11 @@
-﻿namespace SGCM.Domain.Repository
+﻿namespace SGCM.Domain.Repository;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        Task CommitAsync();
-    }
+    Task<int> CommitAsync(CancellationToken ct = default);
+    Task<int> CommitAsync(Func<Task>? postCommitAction, CancellationToken ct = default);
+    Task BeginTransactionAsync();
+    Task CommitTransactionAsync(Func<Task>? postCommitAction = null);
+    Task RollbackTransactionAsync();
+    bool TieneTransaccionActiva { get; }
 }

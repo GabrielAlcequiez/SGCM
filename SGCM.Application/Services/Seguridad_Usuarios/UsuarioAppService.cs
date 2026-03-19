@@ -42,10 +42,13 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.AgregarAsync(usuario);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual(permitirAnonimo: true);
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual(permitirAnonimo: true);
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Usuario", $"Se creó un nuevo usuario con email: {dto.email}");
+                }
+            );
 
             return new UsuarioResponseDto
             {
@@ -70,10 +73,13 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(usuario);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Usuario", $"Se actualizó el usuario con ID: {usuario.Id}");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Usuario", $"Se actualizó el usuario con ID: {usuario.Id}");
+                }
+            );
 
             return new UsuarioResponseDto
             {
@@ -99,10 +105,13 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(usuario);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "CambiarPassword", "Usuario", $"Se cambió el password del usuario con ID: {usuario.Id}");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "CambiarPassword", "Usuario", $"Se cambió el password del usuario con ID: {usuario.Id}");
+                }
+            );
         }
 
         public async Task<bool> EliminarAsync(int id)
@@ -117,11 +126,14 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             user.Eliminar();
             await _repository.ActualizarAsync(user);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
-            
-            await _unitOfWork.CommitAsync();
-            
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Usuario", $"El usuario con ID: {id} fue eliminado correctamente");
+                }
+            );
+
             return true;
         }
 

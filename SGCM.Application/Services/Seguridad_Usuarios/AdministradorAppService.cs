@@ -37,9 +37,10 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             );
 
             await _repository.AgregarAsync(nuevoAdministrador);
-            await _unitOfWork.CommitAsync();
 
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}");
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () => await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Administrador", $"Creación del administrador con ID {nuevoAdministrador.Id}")
+            );
 
             return new AdministradorResponseDto
             {
@@ -62,10 +63,13 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
 
             await _repository.ActualizarAsync(administradorExistente);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Administrador", $"Actualización del administrador con ID {administradorExistente.Id}");
-            
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Actualizar", "Administrador", $"Actualización del administrador con ID {administradorExistente.Id}");
+                }
+            );
             
             return new AdministradorResponseDto
             {
@@ -85,10 +89,13 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
             administradorExistente.Eliminar();
             await _repository.ActualizarAsync(administradorExistente);
 
-            var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
-            await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");
-
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync(
+                postCommitAction: async () =>
+                {
+                    var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+                    await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Eliminar", "Administrador", $"Eliminación del administrador con ID {id}");
+                }
+            );
 
             return true;
         }
