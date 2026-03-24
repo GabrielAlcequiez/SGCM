@@ -6,6 +6,6 @@
 
         Task ValidarDentroDeHorarioLaboralAsync(int medicoId, DateTime fechaHora);
 
-        void ValidarTransicionEstado(int estadoActual, int nuevoEstado);
+        void ValidarTransicionEstado(int estadoActual, int nuevoEstado = 0);
     }
 }

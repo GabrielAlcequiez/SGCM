@@ -27,6 +27,9 @@ namespace SGCM.Application.Services.Pacientes
 
         public async Task<ProveedoresResponseDto> CrearAsync(CrearProveedoresDto dto)
         {
+            await _domainService.ValidarNombreUnicoAsync(dto.Nombre);
+            await _domainService.EsRNCUnicoAsync(dto.RNC);
+
             var proveedor = new Proveedores
             (
                 dto.Nombre,
@@ -34,9 +37,6 @@ namespace SGCM.Application.Services.Pacientes
                 dto.Telefono,
                 dto.CoberturaDefault
             );
-
-await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
-            await _domainService.EsRNCUnicoAsync(proveedor.RNC);
 
             await _repository.AgregarAsync(proveedor);
 
@@ -66,9 +66,10 @@ await _domainService.ValidarNombreUnicoAsync(proveedor.Nombre);
             if (proveedor is null)
                 throw new ExcepcionReglaNegocio($"No existe un proveedor con ID: {id}", "PROVEEDOR_NO_ENCONTRADO");
 
-            proveedor.Actualizar(dtoC.Nombre, dtoC.RNC, dtoC.Telefono, dtoC.CoberturaDefault);
+            if (proveedor.Nombre != dtoC.Nombre)
+                await _domainService.ValidarNombreUnicoAsync(dtoC.Nombre);
 
-            await _domainService.ValidarNombreUnicoAsync(dtoC.Nombre);
+            proveedor.Actualizar(dtoC.Nombre, dtoC.RNC, dtoC.Telefono, dtoC.CoberturaDefault);
 
             await _repository.ActualizarAsync(proveedor);
 

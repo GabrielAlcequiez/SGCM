@@ -94,7 +94,7 @@ namespace SGCM.Application.Services.Citas_Agenda
             if (cita is null)
                 throw new ExcepcionNoEncontrado("Cita", id);
 
-            _citasDomainService.ValidarTransicionEstado(cita.Estado, cita.Estado);
+            _citasDomainService.ValidarTransicionEstado(cita.Estado);
 
             if (DateTime.Now > dtoC.FechaHora)
                 throw new ExcepcionReglaNegocio("No se pueden programar citas en el pasado.", "FECHA_INVALIDA");

@@ -10,7 +10,7 @@ namespace SGCM.Domain.Validaciones
             RegexOptions.Compiled);
 
         private static readonly Regex TelefonoRegex = new(
-            @"^\+?[0-9]{10,15}$",
+            @"^\+?[0-9]{9,15}$",
             RegexOptions.Compiled);
 
         private static readonly Regex RNCRegex = new(

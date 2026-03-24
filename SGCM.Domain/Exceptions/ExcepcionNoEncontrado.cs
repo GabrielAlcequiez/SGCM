@@ -3,9 +3,13 @@
     public class ExcepcionNoEncontrado : ExcepcionDominio
     {
         public ExcepcionNoEncontrado(string nombreEntidad, object key) 
-            : base($"El recurso/entidad '{nombreEntidad}' no existe.", "ENTIDAD_NO_ENCONTRADA")
+            : base($"El recurso/entidad '{nombreEntidad}' con ID: '{key}' no existe.", "NO_ENCONTRADO")
         {
+        }
 
+        public ExcepcionNoEncontrado(string mensaje) 
+            : base(mensaje, "NO_ENCONTRADO")
+        {
         }
     }
 }

@@ -29,6 +29,9 @@ namespace SGCM.Application.Services.Pacientes
         public async Task<PacienteResponseDto> CrearAsync(CrearPacienteDto dto)
         {
             var usuarioIdActual = _tokenService.ObtenerUsuarioIdActual();
+
+            await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
+
             var paciente = new Paciente(
                 dto.Nombre,
                 dto.Apellido,
@@ -40,7 +43,6 @@ namespace SGCM.Application.Services.Pacientes
                 usuarioIdActual
             );
 
-            await _domainService.ValidarTelefonoUnicoAsync(dto.Telefono);
             await _repository.AgregarAsync(paciente);
 
             await _unitOfWork.CommitAsync(

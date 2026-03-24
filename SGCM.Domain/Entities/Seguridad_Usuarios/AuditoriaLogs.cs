@@ -28,7 +28,8 @@ namespace SGCM.Domain.Entities.Seguridad_Usuarios
 
         protected override void ValidarEntradaDatos()
         {
-            ValidacionBase<AuditoriaLogs>.IdValido(UsuarioId, "UsuarioId");
+            if (UsuarioId < 0)
+                throw new ExcepcionValidacion("UsuarioId debe ser válido.");
 
             ValidacionBase<AuditoriaLogs>.Requerido(EntidadAfectada, "EntidadAfectada");
             ValidacionBase<AuditoriaLogs>.Longitud(EntidadAfectada, 50, "EntidadAfectada");

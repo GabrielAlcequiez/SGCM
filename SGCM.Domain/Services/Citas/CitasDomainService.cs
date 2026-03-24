@@ -54,7 +54,7 @@ namespace SGCM.Domain.Services
             }
         }
 
-        public void ValidarTransicionEstado(int estadoActual, int nuevoEstado)
+        public void ValidarTransicionEstado(int estadoActual, int nuevoEstado = 0)
         {
             if (estadoActual == 2)
             {
