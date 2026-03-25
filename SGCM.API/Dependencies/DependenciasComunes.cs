@@ -4,6 +4,7 @@ using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Application.Services;
 using SGCM.Application.Services.Seguridad_Usuarios;
 using SGCM.Domain.Repository;
+using SGCM.Infraestructure.Notifications;
 using SGCM.Infraestructure.Services;
 using SGCM.Persistence.Repositories;
 
@@ -17,7 +18,9 @@ public static class DependenciasComunes
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAutenticacionService, LoginService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<INotificacionService, NotificacionService>();
+        services.AddScoped<ISmsNotificationService, SmsNotificationService>();
+        services.AddScoped<IPushNotificationService, PushNotificationService>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
 
         return services;
     }
