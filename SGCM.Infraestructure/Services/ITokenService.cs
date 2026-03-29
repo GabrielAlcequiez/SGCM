@@ -1,4 +1,4 @@
-﻿namespace SGCM.Application.Interfaces
+﻿namespace SGCM.Infraestructure.Services
 {
     public interface ITokenService
     {

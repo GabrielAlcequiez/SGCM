@@ -4,6 +4,7 @@ using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Seguridad_Usuarios;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
+using SGCM.Infraestructure.Services;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace SGCM.Application.Services

@@ -1,5 +1,4 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
-using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Citas_Agenda;
@@ -8,6 +7,8 @@ using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Domain.Services.Interfaces.ICitas;
+using SGCM.Infraestructure.Notifications;
+using SGCM.Infraestructure.Services;
 
 namespace SGCM.Application.Services.Citas_Agenda
 {
@@ -18,11 +19,11 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly INotificacionService _notificacionService;
-        IMedicoRepository _medicoRepository;
-        IPacienteRepository _pacienteRepository;
+        private readonly IMedicoRepository _medicoRepository;
+        private readonly IPacienteRepository _pacienteRepository;
+        private readonly IEmailNotificationService _emailNotificationService;
 
-        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork, INotificacionService notificacionService)
+        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork, IEmailNotificationService emailNotificationService)
         {
             _citasDomainService = domainService;
             _citaRepository = repository;
@@ -31,7 +32,7 @@ namespace SGCM.Application.Services.Citas_Agenda
             _pacienteRepository = pacienteRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
-            _notificacionService = notificacionService;
+            _emailNotificationService = emailNotificationService;
         }
 
         public async Task<CitaResponseDto> CrearAsync(CrearCitaDto dto)
@@ -68,11 +69,13 @@ namespace SGCM.Application.Services.Citas_Agenda
                     await _auditoriaLogger.RegistrarAsync(usuarioIdActual, "Crear", "Cita",
                         $"Cita creada para el paciente {paciente.Nombre} con el Dr. {medico.Apellido} el {dto.FechaHora:dd/MM/yyyy HH:mm}");
 
-                    await _notificacionService.EnviarAsync(
-                        new[] { paciente.UsuarioId },
-                        "CitaAgendada",
-                        $"Su cita ha sido programada para el {cita.FechaHora:dd/MM/yyyy HH:mm} con el/la Dr/Dra. {medico.Nombre} {medico.Apellido}."
-                    );
+                    foreach (var destinatario in new[] { paciente.UsuarioId.ToString() })
+                    {
+                        await _emailNotificationService.EnviarAsync(
+                            destinatario,
+                            $"Su cita ha sido programada para el {cita.FechaHora:dd/MM/yyyy HH:mm} con el/la Dr/Dra. {medico.Nombre} {medico.Apellido}."
+                        );
+                    }
                 }
             );
 
@@ -119,11 +122,13 @@ namespace SGCM.Application.Services.Citas_Agenda
                     var medicoActualizado = await _medicoRepository.ObtenerPorIdAsync(cita.MedicoId);
                     if (pacienteActualizado is not null && medicoActualizado is not null)
                     {
-                        await _notificacionService.EnviarAsync(
-                            new[] { pacienteActualizado.UsuarioId, medicoActualizado.UsuarioId },
-                            "CitaModificada",
-                            $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido modificada."
-                        );
+                        foreach (var destinatario in new[] { pacienteActualizado.UsuarioId.ToString(), medicoActualizado.UsuarioId.ToString() })
+                        {
+                            await _emailNotificationService.EnviarAsync(
+                                destinatario,
+                                $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido modificada."
+                            );
+                        }
                     }
                 }
             );
@@ -190,11 +195,13 @@ namespace SGCM.Application.Services.Citas_Agenda
                     var medicoCancelado = await _medicoRepository.ObtenerPorIdAsync(cita.MedicoId);
                     if (pacienteCancelado is not null && medicoCancelado is not null)
                     {
-                        await _notificacionService.EnviarAsync(
-                            new[] { pacienteCancelado.UsuarioId, medicoCancelado.UsuarioId },
-                            "CitaCancelada",
-                            $"La cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido cancelada."
-                        );
+                        foreach (var destinatario in new[] { pacienteCancelado.UsuarioId.ToString(), medicoCancelado.UsuarioId.ToString() })
+                        {
+                            await _emailNotificationService.EnviarAsync(
+                                destinatario,
+                                $"La cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido cancelada."
+                            );
+                        }
                     }
                 }
             );
@@ -262,11 +269,13 @@ namespace SGCM.Application.Services.Citas_Agenda
                     var pacienteCompletado = await _pacienteRepository.ObtenerPorIdAsync(cita.PacienteId);
                     if (pacienteCompletado is not null)
                     {
-                        await _notificacionService.EnviarAsync(
-                            new[] { pacienteCompletado.UsuarioId },
-                            "CitaCompletada",
-                            $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido completada."
-                        );
+                        foreach (var destinatario in new[] { pacienteCompletado.UsuarioId.ToString() })
+                        {
+                            await _emailNotificationService.EnviarAsync(
+                                destinatario,
+                                $"Su cita del {cita.FechaHora:dd/MM/yyyy HH:mm} ha sido completada."
+                            );
+                        }
                     }
                 }
             );
