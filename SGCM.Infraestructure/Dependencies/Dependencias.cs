@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SGCM.Persistence.Context;
 
-namespace SGCM.API.Dependencies;
+namespace SGCM.Infraestructure.Dependencies;
 
 public static class Dependencias
 {

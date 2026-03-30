@@ -1,4 +1,5 @@
 ﻿using SGCM.Application.Dtos.Citas_Agenda;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Medicos;
@@ -6,7 +7,7 @@ using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
 using SGCM.Domain.Services.Interfaces.ICitas;
-using SGCM.Infraestructure.Services;
+
 
 namespace SGCM.Application.Services.Citas_Agenda
 {

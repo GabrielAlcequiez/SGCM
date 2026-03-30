@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SGCM.API.Dependencies;
+using SGCM.Infraestructure.Dependencies;
 using SGCM.API.Middleware;
 using System.Text;
 

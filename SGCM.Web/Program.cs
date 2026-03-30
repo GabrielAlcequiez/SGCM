@@ -1,3 +1,5 @@
+using SGCM.Infraestructure.Dependencies;
+
 namespace SGCM.Web
 {
     public class Program
@@ -8,6 +10,7 @@ namespace SGCM.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDependencias(builder.Configuration.GetConnectionString("Database")!);
 
             var app = builder.Build();
 

@@ -1,11 +1,12 @@
 ﻿using SGCM.Application.Dtos.Pacientes;
+using SGCM.Application.Interfaces;
 using SGCM.Application.Interfaces.Pacientes;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Pacientes;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Services.Interfaces.IPacientes;
-using SGCM.Infraestructure.Services;
+
 
 namespace SGCM.Application.Services.Pacientes
 {

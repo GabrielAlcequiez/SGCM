@@ -6,7 +6,7 @@ using SGCM.Domain.Services;
 using SGCM.Domain.Services.Interfaces.ICitas;
 using SGCM.Persistence.Repositories;
 
-namespace SGCM.API.Dependencies;
+namespace SGCM.Infraestructure.Dependencies;
 
 public static class DependenciasCitas
 {

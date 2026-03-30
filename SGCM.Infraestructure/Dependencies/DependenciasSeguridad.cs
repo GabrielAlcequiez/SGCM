@@ -8,7 +8,7 @@ using SGCM.Domain.Services;
 using SGCM.Domain.Services.Interfaces.ISeguridad_Usuarios;
 using SGCM.Persistence.Repositories;
 
-namespace SGCM.API.Dependencies;
+namespace SGCM.Infraestructure.Dependencies;
 
 public static class DependenciasSeguridad
 {

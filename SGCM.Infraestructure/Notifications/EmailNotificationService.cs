@@ -1,3 +1,5 @@
+using SGCM.Application.Interfaces;
+
 namespace SGCM.Infraestructure.Notifications
 {
     public class EmailNotificationService : IEmailNotificationService

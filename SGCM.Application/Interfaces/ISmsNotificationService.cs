@@ -1,4 +1,4 @@
-namespace SGCM.Infraestructure.Notifications
+namespace SGCM.Application.Interfaces
 {
     public interface ISmsNotificationService : IBaseNotificationService
     {

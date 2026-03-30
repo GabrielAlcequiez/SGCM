@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SGCM.Domain\SGCM.Domain.csproj" />
-    <ProjectReference Include="..\SGCM.Infraestructure\SGCM.Infraestructure.csproj" />
   </ItemGroup>
 
 </Project>

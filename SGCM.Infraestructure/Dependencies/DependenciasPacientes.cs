@@ -6,7 +6,7 @@ using SGCM.Domain.Services;
 using SGCM.Domain.Services.Interfaces.IPacientes;
 using SGCM.Persistence.Repositories;
 
-namespace SGCM.API.Dependencies;
+namespace SGCM.Infraestructure.Dependencies;
 
 public static class DependenciasPacientes
 {
