@@ -68,7 +68,6 @@ El proyecto implementa **Arquitectura Limpia (Clean Architecture)** con una sepa
 
 ### Domain-Driven Design (DDD)
 - **Entidades** con identidad propia y validación intrínseca
-- **Value Objects** para conceptos del dominio
 - **Domain Services** para reglas de negocio complejas
 - **Repository Pattern** con interfaces genéricas
 
@@ -141,8 +140,6 @@ SGCM/
 - **JWT Bearer** - Autenticación y autorización
 - **Swagger/OpenAPI** - Documentación de API (Swashbuckle)
 - **Windows Forms** - Aplicación de escritorio
-- **Bootstrap 5** - Framework CSS para el frontend web
-- **jQuery** - Biblioteca JavaScript
 
 ## Requisitos
 
@@ -197,9 +194,6 @@ dotnet run
 cd SGCM.Web
 dotnet run
 ```
-
-La API estará disponible en: `https://localhost:5001`
-La documentación Swagger en: `https://localhost:5001/swagger`
 
 ## Endpoints Principales
 
