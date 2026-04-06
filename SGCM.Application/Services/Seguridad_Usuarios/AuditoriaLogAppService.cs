@@ -18,11 +18,7 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
         {
             var logs = await _repository.ObtenerPorRangoFechasAsync(inicio, fin);
 
-            if (!logs.Any())
-            {
-                throw new ExcepcionReglaNegocio("No se encontró ningun log", "LOGS_NO_ENCONTRADOS");
-            }
-            var listaLogs = logs.Select(log => new AuditoriaLogResponseDto
+            return logs.Select(log => new AuditoriaLogResponseDto
             {
                 Id = log.Id,
                 UsuarioId = log.UsuarioId,
@@ -31,8 +27,6 @@ namespace SGCM.Application.Services.Seguridad_Usuarios
                 Fecha = log.Fecha,
                 Detalles = log.Detalles
             }).ToList();
-
-            return listaLogs;
         }
 
         public async Task<IReadOnlyList<AuditoriaLogResponseDto>> LeerPorUsuarioAsync(int usuarioId)

@@ -1,0 +1,67 @@
+@model IEnumerable<SGCM.Application.Dtos.Citas_Agenda.CitaResponseDto>
+
+@{
+    ViewData["Title"] = "Citas";
+}
+
+<h1>Citas</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear Nueva</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaHora)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Motivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PacienteId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MedicoId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaHora)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Motivo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PacienteId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MedicoId)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Detalles", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Eliminar", "Delete", new { id=item.Id }) |
+                @Html.ActionLink("Cancelar", "Cancelar", new { id=item.Id }) |
+                @Html.ActionLink("Completar", "Completar", new { id=item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

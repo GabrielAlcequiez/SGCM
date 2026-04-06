@@ -1,0 +1,72 @@
+@model IEnumerable<SGCM.Application.Dtos.Seguridad_Usuarios.AuditoriaLogResponseDto>
+
+@{
+    ViewData["Title"] = "Auditoría";
+    Layout = "_Layout";
+}
+
+<h1>Auditoría</h1>
+
+<form asp-action="PorRangoFechas" method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Fecha inicio</label>
+        <input type="date" name="inicio" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Fecha fin</label>
+        <input type="date" name="fin" class="form-control" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <a asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().UsuarioId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Accion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().EntidadAfectada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Fecha)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UsuarioId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Accion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntidadAfectada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.ActionLink("Detalles", "Details", new { id = item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

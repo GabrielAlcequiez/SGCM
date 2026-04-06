@@ -1,0 +1,52 @@
+@model SGCM.Web.ViewModels.Citas_Agenda.Cita.CrearCitaViewModel
+
+@{
+    ViewData["Title"] = "Crear Cita";
+    Layout = "_Layout";
+}
+
+<h1>Crear Cita</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="MedicoId" class="form-label"></label>
+                <select asp-for="MedicoId" class="form-select">
+                    <option value="">-- Seleccionar Médico --</option>
+                    @foreach (var medico in Model.MedicosDisponibles)
+                    {
+                        <option value="@medico.Id">@medico.NombreCompleto</option>
+                    }
+                </select>
+                <span asp-validation-for="MedicoId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FechaHora" class="form-label"></label>
+                <input asp-for="FechaHora" type="datetime-local" class="form-control" />
+                <span asp-validation-for="FechaHora" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Motivo" class="form-label"></label>
+                <textarea asp-for="Motivo" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Motivo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="Crear" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver a la lista</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

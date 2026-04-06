@@ -1,0 +1,76 @@
+@model SGCM.Web.ViewModels.Pacientes.Paciente.CrearPacienteViewModel
+
+@{
+    ViewData["Title"] = "Crear Paciente";
+    Layout = "_Layout";
+}
+
+<h1>Crear Paciente</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Apellido" class="form-label"></label>
+                <input asp-for="Apellido" class="form-control" />
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Telefono" class="form-label"></label>
+                <input asp-for="Telefono" class="form-control" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Direccion" class="form-label"></label>
+                <input asp-for="Direccion" class="form-control" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FechaNacimiento" class="form-label"></label>
+                <input asp-for="FechaNacimiento" type="date" class="form-control" />
+                <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ProveedorId" class="form-label"></label>
+                <select asp-for="ProveedorId" class="form-select">
+                    <option value="">-- Seleccionar Proveedor/ARS --</option>
+                    @foreach (var proveedor in Model.ProveedoresDisponibles)
+                    {
+                        <option value="@proveedor.Id">@proveedor.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="ProveedorId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NSS" class="form-label"></label>
+                <input asp-for="NSS" class="form-control" />
+                <span asp-validation-for="NSS" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="Crear" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Volver a la lista</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
