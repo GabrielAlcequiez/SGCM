@@ -28,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
         if (postCommitAction != null)
         {
             await postCommitAction();
+            await _context.SaveChangesAsync(ct);
         }
 
         return result;
