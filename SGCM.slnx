@@ -11,6 +11,7 @@
     <Project Path="SGCM.Persistence/SGCM.Persistence.csproj" Id="7d16bd5b-0330-4915-8faa-a3ac90f5826a" />
   </Folder>
   <Folder Name="/Presentation/">
+    <Project Path="SGCM.Desktop/SGCM.Desktop.csproj" Id="2767cc71-cd8d-497a-bf5d-52f6255524e0" />
     <Project Path="SGCM.Web/SGCM.Web.csproj" Id="3ea3fc73-d54d-474d-b126-a07323887e58" />
   </Folder>
 </Solution>

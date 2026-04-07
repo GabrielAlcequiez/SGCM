@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using SGCM.Web.Services;
-using SGCM.Web.Services.Auth;
-using SGCM.Web.Services.Seguridad_Usuarios;
-using SGCM.Web.Services.Pacientes;
-using SGCM.Web.Services.Citas_Agenda;
 using SGCM.Infraestructure.Dependencies;
+using SGCM.Web.Extensiones;
+using System.Text;
 
 namespace SGCM.Web
 {
@@ -19,32 +15,8 @@ namespace SGCM.Web
             builder.Services.AddControllersWithViews();
 
             #region Configuración HttpClient
-            builder.Services.AddHttpClient<IAuthApiService, AuthApiService>();
-            builder.Services.AddHttpClient<IUsuarioApiService, UsuarioApiService>();
-            builder.Services.AddHttpClient<IAdministradorApiService, AdministradorApiService>();
-            builder.Services.AddHttpClient<IAuditoriaApiService, AuditoriaApiService>();
-            builder.Services.AddHttpClient<IPacienteApiService, PacienteApiService>();
-            builder.Services.AddHttpClient<IProveedoresApiService, ProveedoresApiService>();
-            builder.Services.AddHttpClient<IMedicoApiService, MedicoApiService>();
-            builder.Services.AddHttpClient<IEspecialidadesApiService, EspecialidadesApiService>();
-            builder.Services.AddHttpClient<IDisponibilidadApiService, DisponibilidadApiService>();
-            builder.Services.AddHttpClient<ICitasApiService, CitasApiService>();
-            builder.Services.AddScoped<BaseApiService>(sp =>
-            {
-                var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient();
-                var configuration = sp.GetRequiredService<IConfiguration>();
-                return new BaseApiService(httpClient, configuration);
-            });
-            builder.Services.AddScoped<IAuthApiService, AuthApiService>();
-            builder.Services.AddScoped<IUsuarioApiService, UsuarioApiService>();
-            builder.Services.AddScoped<IAdministradorApiService, AdministradorApiService>();
-            builder.Services.AddScoped<IAuditoriaApiService, AuditoriaApiService>();
-            builder.Services.AddScoped<IPacienteApiService, PacienteApiService>();
-            builder.Services.AddScoped<IProveedoresApiService, ProveedoresApiService>();
-            builder.Services.AddScoped<IMedicoApiService, MedicoApiService>();
-            builder.Services.AddScoped<IEspecialidadesApiService, EspecialidadesApiService>();
-            builder.Services.AddScoped<IDisponibilidadApiService, DisponibilidadApiService>();
-            builder.Services.AddScoped<ICitasApiService, CitasApiService>();
+            builder.Services.AddHttpClientFactory();
+            builder.Services.AddApiServices();
             #endregion
 
             #region Configuración JWT para SGCM.Web
