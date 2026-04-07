@@ -50,5 +50,13 @@ namespace SGCM.Api.Controllers
             var resultado = await _pacienteAppService.EliminarAsync(id);
             return Ok(resultado);
         }
+
+        [HttpGet("usuario/{usuarioId}")]
+        public async Task<ActionResult<PacienteResponseDto>> GetByUsuarioId(int usuarioId)
+        {
+            var paciente = await _pacienteAppService.ObtenerPorUsuarioIdAsync(usuarioId);
+            if (paciente == null) return NotFound();
+            return Ok(paciente);
+        }
     }
 }

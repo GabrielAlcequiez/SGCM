@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SGCM.Web.Services;
 using SGCM.Web.Services.Auth;
+using SGCM.Web.Services.Pacientes;
 using SGCM.Web.ViewModels.Auth;
 
 namespace SGCM.Web.Controllers.Auth
@@ -8,10 +9,12 @@ namespace SGCM.Web.Controllers.Auth
     public class AuthController : Controller
     {
         private readonly IAuthApiService _authApiService;
+        private readonly IPacienteApiService _pacienteApiService;
 
-        public AuthController(IAuthApiService authApiService)
+        public AuthController(IAuthApiService authApiService, IPacienteApiService pacienteApiService)
         {
             _authApiService = authApiService;
+            _pacienteApiService = pacienteApiService;
         }
 
         [HttpGet]
@@ -55,6 +58,19 @@ namespace SGCM.Web.Controllers.Auth
                 HttpContext.Session.SetInt32("UsuarioId", result.UsuarioId);
                 HttpContext.Session.SetString("UsuarioEmail", result.Email);
                 HttpContext.Session.SetString("UsuarioRol", result.Rol);
+
+                if (result.Rol == "Paciente")
+                {
+                    try
+                    {
+                        var paciente = await _pacienteApiService.GetByUsuarioIdAsync(result.Token, result.UsuarioId);
+                        if (paciente != null)
+                        {
+                            HttpContext.Session.SetInt32("PacienteId", paciente.Id);
+                        }
+                    }
+                    catch { }
+                }
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
@@ -117,7 +133,7 @@ namespace SGCM.Web.Controllers.Auth
                 HttpContext.Session.SetString("UsuarioEmail", result.Email);
                 HttpContext.Session.SetString("UsuarioRol", result.Rol);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("CompletarPerfil", "Pacientes");
             }
             catch (HttpRequestException)
             {

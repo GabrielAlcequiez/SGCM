@@ -5,6 +5,6 @@ namespace SGCM.Application.Interfaces.Pacientes
 {
     public interface IPacienteAppService : IAppService<CrearPacienteDto, PacienteResponseDto>
     {
-
+        Task<PacienteResponseDto?> ObtenerPorUsuarioIdAsync(int usuarioId);
     }
 }

@@ -71,5 +71,13 @@ namespace SGCM.Api.Controllers
             var resultado = await _citasAppService.ObtenerFranjasDisponiblesAsync(medicoId);
             return Ok(resultado);
         }
+
+        [HttpGet("paciente/{pacienteId}")]
+        public async Task<ActionResult<IReadOnlyList<CitaResponseDto>>> GetByPaciente(int pacienteId)
+        {
+            var todasCitas = await _citasAppService.LeerTodosAsync();
+            var citasPaciente = todasCitas.Where(c => c.PacienteId == pacienteId).ToList();
+            return Ok(citasPaciente);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace SGCM.Web.ViewModels.Auth
         [Display(Name = "Rol")]
         public string Rol { get; set; } = "Paciente";
 
-        public List<string> RolesDisponibles { get; set; } = new() { "Paciente", "Medico", "Administrador" };
+        public List<string> RolesDisponibles { get; set; } = new() { "Paciente" };
 
         public string? ErrorMessage { get; set; }
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);

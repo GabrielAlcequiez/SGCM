@@ -224,5 +224,98 @@ namespace SGCM.Web.Controllers
             await _pacienteApiService.DeleteAsync(token, id);
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public IActionResult CompletarPerfil()
+        {
+            var token = GetToken();
+            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
+
+            if (HttpContext.Session.GetInt32("PacienteId") != null)
+            {
+                return RedirectToAction("Index", "Citas");
+            }
+
+            var model = new CompletarPerfilViewModel();
+            
+            try
+            {
+                var proveedores = _proveedoresApiService.GetAllAsync(token).Result;
+                model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                {
+                    Id = p.Id,
+                    Nombre = p.Nombre
+                }).ToList();
+            }
+            catch
+            {
+                model.ProveedoresDisponibles = new List<ProveedorDropdownViewModel>();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompletarPerfil(CompletarPerfilViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                try
+                {
+                    var token = GetToken();
+                    var proveedores = await _proveedoresApiService.GetAllAsync(token);
+                    model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                    {
+                        Id = p.Id,
+                        Nombre = p.Nombre
+                    }).ToList();
+                }
+                catch { }
+                return View(model);
+            }
+
+            try
+            {
+                var token = GetToken();
+                var dto = new CrearPacienteDto
+                {
+                    Nombre = model.Nombre,
+                    Apellido = model.Apellido,
+                    Telefono = model.Telefono,
+                    Direccion = model.Direccion,
+                    FechaNacimiento = model.FechaNacimiento,
+                    ProveedorId = model.ProveedorId,
+                    NSS = model.NSS
+                };
+
+                var resultado = await _pacienteApiService.CreateAsync(token, dto);
+
+                if (resultado != null)
+                {
+                    HttpContext.Session.SetInt32("PacienteId", resultado.Id);
+                    return RedirectToAction("Index", "Citas");
+                }
+                ModelState.AddModelError(string.Empty, "No fue posible completar el perfil.");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+            }
+
+            try
+            {
+                var token = GetToken();
+                var proveedores = await _proveedoresApiService.GetAllAsync(token);
+                model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                {
+                    Id = p.Id,
+                    Nombre = p.Nombre
+                }).ToList();
+            }
+            catch { }
+
+            return View(model);
+        }
     }
 }

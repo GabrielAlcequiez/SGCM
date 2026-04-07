@@ -9,5 +9,6 @@ namespace SGCM.Web.Services.Pacientes
         Task<PacienteResponseDto?> CreateAsync(string token, CrearPacienteDto dto);
         Task<PacienteResponseDto?> UpdateAsync(string token, int id, CrearPacienteDto dto);
         Task<bool> DeleteAsync(string token, int id);
+        Task<PacienteResponseDto?> GetByUsuarioIdAsync(string token, int usuarioId);
     }
 }

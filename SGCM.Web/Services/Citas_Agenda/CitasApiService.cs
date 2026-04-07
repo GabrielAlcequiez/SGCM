@@ -72,5 +72,13 @@ namespace SGCM.Web.Services.Citas_Agenda
             ClearAuthorizationToken();
             return result;
         }
+
+        public async Task<IReadOnlyList<CitaResponseDto>> GetByPacienteAsync(string token, int pacienteId)
+        {
+            SetAuthorizationToken(token);
+            var result = await GetAsync<IReadOnlyList<CitaResponseDto>>($"api/Cita/paciente/{pacienteId}");
+            ClearAuthorizationToken();
+            return result ?? new List<CitaResponseDto>();
+        }
     }
 }

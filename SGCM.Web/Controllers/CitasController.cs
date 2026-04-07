@@ -24,9 +24,32 @@ namespace SGCM.Web.Controllers
             var token = GetToken();
             if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
 
+            var rol = HttpContext.Session.GetString("UsuarioRol");
+
+            if (rol == "Paciente")
+            {
+                var pacienteId = HttpContext.Session.GetInt32("PacienteId");
+                if (pacienteId == null)
+                {
+                    return RedirectToAction("CompletarPerfil", "Pacientes");
+                }
+
+                try
+                {
+                    var citas = await _citasApiService.GetByPacienteAsync(token, pacienteId.Value);
+                    ViewBag.EsPaciente = true;
+                    return View(citas);
+                }
+                catch (Exception)
+                {
+                    return View(new List<CitaResponseDto>());
+                }
+            }
+
             try
             {
                 var citas = await _citasApiService.GetAllAsync(token);
+                ViewBag.EsPaciente = false;
                 return View(citas);
             }
             catch (Exception)
@@ -43,6 +66,9 @@ namespace SGCM.Web.Controllers
 
             var cita = await _citasApiService.GetByIdAsync(token, id);
             if (cita == null) return NotFound();
+
+            var rol = HttpContext.Session.GetString("UsuarioRol");
+            ViewBag.EsPaciente = rol == "Paciente";
 
             var viewModel = new CitaViewModel
             {

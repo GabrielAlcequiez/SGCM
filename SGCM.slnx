@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/API/">
-    <Project Path="SGCM.Api/SGCM.Api.csproj" DisplayName="SGCM.API" Id="e2a3860f-9e88-4463-8546-1a348c41a72c" />
+    <Project Path="SGCM.Api/SGCM.Api.csproj" Id="e2a3860f-9e88-4463-8546-1a348c41a72c" />
   </Folder>
   <Folder Name="/Core/">
     <Project Path="SGCM.Application/SGCM.Application.csproj" Id="6156d7f3-59ad-4ffc-9066-aefb4c2d2c50" />
@@ -11,7 +11,6 @@
     <Project Path="SGCM.Persistence/SGCM.Persistence.csproj" Id="7d16bd5b-0330-4915-8faa-a3ac90f5826a" />
   </Folder>
   <Folder Name="/Presentation/">
-    <Project Path="SGCM.Desktop/SGCM.Desktop.csproj" Id="de2d9ea3-e1bf-40a4-b351-0d7503e8891b" />
     <Project Path="SGCM.Web/SGCM.Web.csproj" Id="3ea3fc73-d54d-474d-b126-a07323887e58" />
   </Folder>
 </Solution>

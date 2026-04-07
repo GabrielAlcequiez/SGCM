@@ -56,7 +56,11 @@
 </div>
 <div>
     @Html.ActionLink("Editar", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Cancelar", "Cancelar", new { id = Model.Id }) |
-    @Html.ActionLink("Completar", "Completar", new { id = Model.Id }) |
+    @Html.ActionLink("Cancelar", "Cancelar", new { id = Model.Id })
+    @if (ViewBag.EsPaciente != true) {
+        @: |
+        @Html.ActionLink("Completar", "Completar", new { id = Model.Id })
+    }
+    |
     <a asp-action="Index">Volver a la lista</a>
 </div>

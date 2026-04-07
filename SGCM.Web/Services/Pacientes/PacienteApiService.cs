@@ -48,5 +48,13 @@ namespace SGCM.Web.Services.Pacientes
             ClearAuthorizationToken();
             return result;
         }
+
+        public async Task<PacienteResponseDto?> GetByUsuarioIdAsync(string token, int usuarioId)
+        {
+            SetAuthorizationToken(token);
+            var result = await GetAsync<PacienteResponseDto>($"api/Paciente/usuario/{usuarioId}");
+            ClearAuthorizationToken();
+            return result;
+        }
     }
 }

@@ -174,5 +174,27 @@ namespace SGCM.Application.Services.Pacientes
             
             return true;
         }
+
+        public async Task<PacienteResponseDto?> ObtenerPorUsuarioIdAsync(int usuarioId)
+        {
+            var paciente = await _repository.ObtenerPorUsuarioIdAsync(usuarioId);
+            
+            if (paciente is null)
+            {
+                return null;
+            }
+            
+            return new PacienteResponseDto
+            {
+                Id = paciente.Id,
+                Nombre = paciente.Nombre,
+                Apellido = paciente.Apellido,
+                Telefono = paciente.Telefono,
+                Direccion = paciente.Direccion,
+                FechaNacimiento = paciente.FechaNacimiento,
+                ProveedorId = paciente.ProveedorId,
+                NSS = paciente.NSS
+            };
+        }
     }
 }
