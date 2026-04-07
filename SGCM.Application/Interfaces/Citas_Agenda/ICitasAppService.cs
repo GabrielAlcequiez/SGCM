@@ -8,5 +8,7 @@ namespace SGCM.Application.Interfaces.Citas_Agenda
         Task<bool> CancelarCitaAsync(int id);
 
         Task<bool> CompletarCitaAsync(int id);
+
+        Task<FranjasDisponiblesResponseDto> ObtenerFranjasDisponiblesAsync(int medicoId);
     }
 }

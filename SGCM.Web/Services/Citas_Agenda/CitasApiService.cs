@@ -64,5 +64,13 @@ namespace SGCM.Web.Services.Citas_Agenda
             ClearAuthorizationToken();
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<FranjasDisponiblesResponseDto?> GetFranjasDisponiblesAsync(string token, int medicoId)
+        {
+            SetAuthorizationToken(token);
+            var result = await GetAsync<FranjasDisponiblesResponseDto>($"api/Cita/franjas/{medicoId}");
+            ClearAuthorizationToken();
+            return result;
+        }
     }
 }

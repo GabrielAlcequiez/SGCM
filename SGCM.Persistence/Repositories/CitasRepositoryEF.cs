@@ -75,6 +75,17 @@ namespace SGCM.Persistence.Repositories
             return await _context.Citas
                 .AnyAsync(c => c.MedicoId == medicoId && c.FechaHora == fechaHora && c.Estado != 3);
         }
+
+        public async Task<IEnumerable<Citas>> ObtenerPorMedicoYFechasAsync(int medicoId, DateTime desde, DateTime hasta)
+        {
+            return await _context.Citas
+                .Where(c => c.MedicoId == medicoId 
+                         && c.FechaHora >= desde 
+                         && c.FechaHora <= hasta
+                         && c.Estado != 2  // No completada
+                         && c.Estado != 3) // No cancelada
+                .ToListAsync();
+        }
         #endregion
     }
 }

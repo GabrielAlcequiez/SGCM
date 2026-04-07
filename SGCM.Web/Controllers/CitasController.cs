@@ -244,9 +244,20 @@ namespace SGCM.Web.Controllers
 
             try
             {
-                await _citasApiService.CancelarAsync(token, id);
+                var resultado = await _citasApiService.CancelarAsync(token, id);
+                if (resultado)
+                {
+                    TempData["Success"] = "Cita cancelada exitosamente.";
+                }
+                else
+                {
+                    TempData["Error"] = "No fue posible cancelar la cita.";
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al cancelar la cita: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -259,11 +270,39 @@ namespace SGCM.Web.Controllers
 
             try
             {
-                await _citasApiService.CompletarAsync(token, id);
+                var resultado = await _citasApiService.CompletarAsync(token, id);
+                if (resultado)
+                {
+                    TempData["Success"] = "Cita completada exitosamente.";
+                }
+                else
+                {
+                    TempData["Error"] = "No fue posible completar la cita.";
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al completar la cita: {ex.Message}";
+            }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerFranjasDisponibles(int medicoId)
+        {
+            var token = GetToken();
+            if (string.IsNullOrEmpty(token)) return Unauthorized();
+
+            try
+            {
+                var resultado = await _citasApiService.GetFranjasDisponiblesAsync(token, medicoId);
+                return Json(resultado);
+            }
+            catch
+            {
+                return Json(new { error = "No se pudieron obtener las disponibilidades" });
+            }
         }
     }
 }

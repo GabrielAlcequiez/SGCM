@@ -4,6 +4,7 @@ using SGCM.Application.Interfaces.Citas_Agenda;
 using SGCM.Application.Logger;
 using SGCM.Domain.Entities.Citas_Agenda;
 using SGCM.Domain.Entities.Pacientes;
+using SGCM.Domain.Entities.Medicos;
 using SGCM.Domain.Exceptions;
 using SGCM.Domain.Repository;
 using SGCM.Domain.Repository.Citas_Agenda;
@@ -16,6 +17,7 @@ namespace SGCM.Application.Services.Citas_Agenda
     {
         private readonly ICitasDomainService _citasDomainService;
         private readonly ICitaRepository _citaRepository;
+        private readonly IDisponibilidadRepository _disponibilidadRepository;
         private readonly IAuditoriaLogger _auditoriaLogger;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
@@ -23,10 +25,20 @@ namespace SGCM.Application.Services.Citas_Agenda
         private readonly IPacienteRepository _pacienteRepository;
         private readonly IEmailNotificationService _emailNotificationService;
 
-        public CitasAppService(ICitasDomainService domainService, ICitaRepository repository, IAuditoriaLogger logger, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository, ITokenService tokenService, IUnitOfWork unitOfWork, IEmailNotificationService emailNotificationService)
+        public CitasAppService(
+            ICitasDomainService domainService, 
+            ICitaRepository repository, 
+            IDisponibilidadRepository disponibilidadRepository,
+            IAuditoriaLogger logger, 
+            IMedicoRepository medicoRepository, 
+            IPacienteRepository pacienteRepository, 
+            ITokenService tokenService, 
+            IUnitOfWork unitOfWork, 
+            IEmailNotificationService emailNotificationService)
         {
             _citasDomainService = domainService;
             _citaRepository = repository;
+            _disponibilidadRepository = disponibilidadRepository;
             _auditoriaLogger = logger;
             _medicoRepository = medicoRepository;
             _pacienteRepository = pacienteRepository;
@@ -282,5 +294,66 @@ namespace SGCM.Application.Services.Citas_Agenda
 
             return true;
         }
+
+        public async Task<FranjasDisponiblesResponseDto> ObtenerFranjasDisponiblesAsync(int medicoId)
+        {
+            var medico = await _medicoRepository.ObtenerPorIdAsync(medicoId);
+            if (medico is null)
+                throw new ExcepcionNoEncontrado("Medico", medicoId);
+
+            var disponibilidades = await _disponibilidadRepository.ObtenerPorMedicoIdAsync(medicoId);
+            
+            var desde = DateTime.Now;
+            var hasta = DateTime.Now.AddDays(30);
+            var citas = await _citaRepository.ObtenerPorMedicoYFechasAsync(medicoId, desde, hasta);
+
+            var franjas = new List<FranjaHorariaDto>();
+
+            foreach (var disp in disponibilidades.Where(d => !d.EsDiaLibre))
+            {
+                var horaActual = disp.HoraInicio;
+                while (horaActual < disp.HoraFin)
+                {
+                    var horaFinBloque = horaActual.Add(TimeSpan.FromMinutes(30));
+                    
+                    if (horaFinBloque > disp.HoraFin)
+                        break;
+
+                    var tieneCita = citas.Any(c => 
+                        c.FechaHora.TimeOfDay == horaActual);
+
+                    if (!tieneCita)
+                    {
+                        franjas.Add(new FranjaHorariaDto
+                        {
+                            DiaSemana = ObtenerNombreDia(disp.DiaSemana),
+                            HoraInicio = horaActual,
+                            HoraFin = horaFinBloque
+                        });
+                    }
+                    
+                    horaActual = horaFinBloque;
+                }
+            }
+
+            return new FranjasDisponiblesResponseDto
+            {
+                MedicoId = medicoId,
+                MedicoNombre = $"Dr. {medico.Nombre} {medico.Apellido}",
+                Franjas = franjas
+            };
+        }
+
+        private static string ObtenerNombreDia(int dia) => dia switch
+        {
+            0 => "Domingo",
+            1 => "Lunes",
+            2 => "Martes",
+            3 => "Miércoles",
+            4 => "Jueves",
+            5 => "Viernes",
+            6 => "Sábado",
+            _ => "Unknown"
+        };
     }
 }

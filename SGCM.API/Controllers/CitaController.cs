@@ -64,5 +64,12 @@ namespace SGCM.Api.Controllers
             var resultado = await _citasAppService.CompletarCitaAsync(id);
             return Ok(resultado);
         }
+
+        [HttpGet("franjas/{medicoId}")]
+        public async Task<ActionResult<FranjasDisponiblesResponseDto>> GetFranjasDisponibles(int medicoId)
+        {
+            var resultado = await _citasAppService.ObtenerFranjasDisponiblesAsync(medicoId);
+            return Ok(resultado);
+        }
     }
 }

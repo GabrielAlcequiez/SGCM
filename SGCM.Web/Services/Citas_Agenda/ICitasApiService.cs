@@ -11,5 +11,6 @@ namespace SGCM.Web.Services.Citas_Agenda
         Task<bool> DeleteAsync(string token, int id);
         Task<bool> CancelarAsync(string token, int id);
         Task<bool> CompletarAsync(string token, int id);
+        Task<FranjasDisponiblesResponseDto?> GetFranjasDisponiblesAsync(string token, int medicoId);
     }
 }
