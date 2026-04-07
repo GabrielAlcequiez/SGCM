@@ -123,9 +123,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible crear la disponibilidad.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             try
@@ -205,9 +209,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible actualizar la disponibilidad.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             try

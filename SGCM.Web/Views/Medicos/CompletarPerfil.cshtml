@@ -1,4 +1,4 @@
-@model SGCM.Web.ViewModels.Pacientes.Paciente.CompletarPerfilViewModel
+@model SGCM.Web.ViewModels.Citas_Agenda.Medico.CompletarPerfilMedicoViewModel
 
 @{
     ViewData["Title"] = "Completar Perfil";
@@ -6,7 +6,7 @@
 }
 
 <h1>Completar tu Perfil</h1>
-<p class="text-muted">Por favor complete su información personal para continuar.</p>
+<p class="text-muted">Por favor complete su información profesional para continuar.</p>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -32,33 +32,21 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="Direccion" class="form-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="FechaNacimiento" class="form-label"></label>
-                <input asp-for="FechaNacimiento" type="date" class="form-control" />
-                <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="ProveedorId" class="form-label"></label>
-                <select asp-for="ProveedorId" class="form-select">
-                    <option value="">-- Seleccionar Proveedor/ARS (Opcional) --</option>
-                    @foreach (var proveedor in Model.ProveedoresDisponibles)
+                <label asp-for="EspecialidadId" class="form-label"></label>
+                <select asp-for="EspecialidadId" class="form-select">
+                    <option value="">-- Seleccionar Especialidad --</option>
+                    @foreach (var especialidad in Model.EspecialidadesDisponibles)
                     {
-                        <option value="@proveedor.Id">@proveedor.Nombre</option>
+                        <option value="@especialidad.Id">@especialidad.Nombre</option>
                     }
                 </select>
-                <span asp-validation-for="ProveedorId" class="text-danger"></span>
+                <span asp-validation-for="EspecialidadId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="NSS" class="form-label"></label>
-                <input asp-for="NSS" class="form-control" placeholder="Opcional" />
-                <span asp-validation-for="NSS" class="text-danger"></span>
+                <label asp-for="Exequatur" class="form-label"></label>
+                <input asp-for="Exequatur" class="form-control" />
+                <span asp-validation-for="Exequatur" class="text-danger"></span>
             </div>
 
             <div class="mb-3">

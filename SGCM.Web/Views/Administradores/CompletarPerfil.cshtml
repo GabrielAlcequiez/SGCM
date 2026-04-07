@@ -1,0 +1,44 @@
+@model SGCM.Web.ViewModels.Seguridad_Usuario.Administrador.CrearAdministradorViewModel
+
+@{
+    ViewData["Title"] = "Completar Perfil";
+    Layout = "_Layout";
+}
+
+<h1>Completar tu Perfil</h1>
+<p class="text-muted">Por favor complete su información personal para continuar.</p>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CompletarPerfil">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Apellido" class="form-label"></label>
+                <input asp-for="Apellido" class="form-control" />
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Cargo" class="form-label"></label>
+                <input asp-for="Cargo" class="form-control" placeholder="Opcional" />
+                <span asp-validation-for="Cargo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="Guardar y Continuar" class="btn btn-primary" />
+                <a asp-controller="Auth" asp-action="CancelarRegistro" class="btn btn-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

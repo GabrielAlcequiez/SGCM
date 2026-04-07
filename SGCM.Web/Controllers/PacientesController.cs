@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SGCM.Web.Services;
 using SGCM.Web.Services.Pacientes;
+using SGCM.Web.Services.Auth;
 using SGCM.Web.ViewModels.Pacientes.Paciente;
 using SGCM.Application.Dtos.Pacientes;
+using SGCM.Application.Dtos.Login;
 
 namespace SGCM.Web.Controllers
 {
@@ -10,11 +12,16 @@ namespace SGCM.Web.Controllers
     {
         private readonly IPacienteApiService _pacienteApiService;
         private readonly IProveedoresApiService _proveedoresApiService;
+        private readonly IAuthApiService _authApiService;
 
-        public PacientesController(IPacienteApiService pacienteApiService, IProveedoresApiService proveedoresApiService)
+        public PacientesController(
+            IPacienteApiService pacienteApiService,
+            IProveedoresApiService proveedoresApiService,
+            IAuthApiService authApiService)
         {
             _pacienteApiService = pacienteApiService;
             _proveedoresApiService = proveedoresApiService;
+            _authApiService = authApiService;
         }
 
         private string GetToken() => HttpContext.Session.GetString("JWTToken") ?? string.Empty;
@@ -110,9 +117,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible crear el paciente.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             return View(model);
@@ -183,9 +194,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible actualizar el paciente.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             return View(model);
@@ -228,8 +243,15 @@ namespace SGCM.Web.Controllers
         [HttpGet]
         public IActionResult CompletarPerfil()
         {
-            var token = GetToken();
-            if (string.IsNullOrEmpty(token)) return RedirectToAction("Login", "Auth");
+            if (HttpContext.Session.GetString("JWTToken") != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (HttpContext.Session.GetString("TempEmail") == null)
+            {
+                return RedirectToAction("Register", "Auth");
+            }
 
             if (HttpContext.Session.GetInt32("PacienteId") != null)
             {
@@ -240,6 +262,12 @@ namespace SGCM.Web.Controllers
             
             try
             {
+                var token = GetToken();
+                if (string.IsNullOrEmpty(token))
+                {
+                    model.ProveedoresDisponibles = new List<ProveedorDropdownViewModel>();
+                    return View(model);
+                }
                 var proveedores = _proveedoresApiService.GetAllAsync(token).Result;
                 model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
                 {
@@ -259,17 +287,29 @@ namespace SGCM.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompletarPerfil(CompletarPerfilViewModel model)
         {
+            var tempEmail = HttpContext.Session.GetString("TempEmail");
+            var tempPassword = HttpContext.Session.GetString("TempPassword");
+            var tempRol = HttpContext.Session.GetString("TempRol");
+
+            if (string.IsNullOrEmpty(tempEmail) || string.IsNullOrEmpty(tempPassword) || string.IsNullOrEmpty(tempRol))
+            {
+                return RedirectToAction("Register", "Auth");
+            }
+
             if (!ModelState.IsValid)
             {
                 try
                 {
                     var token = GetToken();
-                    var proveedores = await _proveedoresApiService.GetAllAsync(token);
-                    model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        Id = p.Id,
-                        Nombre = p.Nombre
-                    }).ToList();
+                        var proveedores = await _proveedoresApiService.GetAllAsync(token);
+                        model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                        {
+                            Id = p.Id,
+                            Nombre = p.Nombre
+                        }).ToList();
+                    }
                 }
                 catch { }
                 return View(model);
@@ -277,7 +317,31 @@ namespace SGCM.Web.Controllers
 
             try
             {
-                var token = GetToken();
+                var registerDto = new RegisterDto
+                {
+                    Email = tempEmail,
+                    Password = tempPassword,
+                    Rol = tempRol
+                };
+
+                var result = await _authApiService.RegisterAsync(registerDto);
+
+                if (result == null)
+                {
+                    ModelState.AddModelError(string.Empty, "No fue posible completar el registro. El correo podría estar en uso.");
+                    return View(model);
+                }
+
+                HttpContext.Session.SetString("JWTToken", result.Token);
+                HttpContext.Session.SetInt32("UsuarioId", result.UsuarioId);
+                HttpContext.Session.SetString("UsuarioEmail", result.Email);
+                HttpContext.Session.SetString("UsuarioRol", result.Rol);
+
+                HttpContext.Session.Remove("TempEmail");
+                HttpContext.Session.Remove("TempPassword");
+                HttpContext.Session.Remove("TempRol");
+
+                var token = result.Token;
                 var dto = new CrearPacienteDto
                 {
                     Nombre = model.Nombre,
@@ -289,29 +353,40 @@ namespace SGCM.Web.Controllers
                     NSS = model.NSS
                 };
 
-                var resultado = await _pacienteApiService.CreateAsync(token, dto);
+                var pacienteResult = await _pacienteApiService.CreateAsync(token, dto);
 
-                if (resultado != null)
+                if (pacienteResult != null)
                 {
-                    HttpContext.Session.SetInt32("PacienteId", resultado.Id);
+                    HttpContext.Session.SetInt32("PacienteId", pacienteResult.Id);
                     return RedirectToAction("Index", "Citas");
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible completar el perfil.");
             }
+            catch (HttpRequestException)
+            {
+                HttpContext.Session.Remove("TempEmail");
+                HttpContext.Session.Remove("TempPassword");
+                HttpContext.Session.Remove("TempRol");
+                HttpContext.Session.Clear();
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             try
             {
                 var token = GetToken();
-                var proveedores = await _proveedoresApiService.GetAllAsync(token);
-                model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                if (!string.IsNullOrEmpty(token))
                 {
-                    Id = p.Id,
-                    Nombre = p.Nombre
-                }).ToList();
+                    var proveedores = await _proveedoresApiService.GetAllAsync(token);
+                    model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
+                    {
+                        Id = p.Id,
+                        Nombre = p.Nombre
+                    }).ToList();
+                }
             }
             catch { }
 

@@ -87,9 +87,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible crear el proveedor.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             return View(model);
@@ -139,9 +143,13 @@ namespace SGCM.Web.Controllers
                 }
                 ModelState.AddModelError(string.Empty, "No fue posible actualizar el proveedor.");
             }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
             catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, "Error al conectar con la API.");
+                ModelState.AddModelError(string.Empty, "Ocurrió un error inesperado. Por favor intente más tarde.");
             }
 
             return View(model);

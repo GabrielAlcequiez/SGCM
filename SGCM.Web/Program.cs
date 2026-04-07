@@ -54,7 +54,6 @@ namespace SGCM.Web
             });
             #endregion
 
-            builder.Services.AddDependencias(builder.Configuration.GetConnectionString("Database")!);
 
             var app = builder.Build();
 
