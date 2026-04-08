@@ -78,19 +78,15 @@
             var selectFranja = document.getElementById('FranjaId');
             selectFranja.innerHTML = '<option value="">-- Seleccionar horario --</option>';
             
-            var diasOrden = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-            diasOrden.forEach(function(dia) {
-                var franjasDelDia = franjasData.filter(function(f) { return f.diaSemana === dia; });
-                if (franjasDelDia.length > 0) {
-                    franjasDelDia.forEach(function(f) {
-                        var horaInicio = f.horaInicio.substring(0, 5);
-                        var horaFin = f.horaFin.substring(0, 5);
-                        var option = document.createElement('option');
-                        option.value = f.fechaHora;
-                        option.textContent = `${dia} ${horaInicio} - ${horaFin}`;
-                        selectFranja.appendChild(option);
-                    });
-                }
+            franjasData.forEach(function(f) {
+                var fechaObj = new Date(f.fechaHora);
+                var fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+                var horaInicio = f.horaInicio.substring(0, 5);
+                var horaFin = f.horaFin.substring(0, 5);
+                var option = document.createElement('option');
+                option.value = f.fechaHora;
+                option.textContent = `${fechaStr} ${horaInicio} - ${horaFin}`;
+                selectFranja.appendChild(option);
             });
         }
 
@@ -121,51 +117,71 @@
                 }
                 
                 if (data.franjas && data.franjas.length > 0) {
-                    franjasData = data.franjas.map(function(f, index) {
-                        var fechaBase = new Date();
-                        fechaBase.setDate(fechaBase.getDate() + index * 7);
+                    franjasData = [];
+                    var diasAMostrar = 14; // 2 semanas
+                    var fechaActual = new Date();
+
+                    for (var i = 0; i < diasAMostrar; i++) {
+                        var fechaIteracion = new Date(fechaActual);
+                        fechaIteracion.setDate(fechaActual.getDate() + i);
                         
-                        while (f.diaSemana !== obtenerDiaSemana(fechaBase.getDay())) {
-                            fechaBase.setDate(fechaBase.getDate() + 1);
-                        }
+                        var diaSemanaIteracion = obtenerDiaSemana(fechaIteracion.getDay());
                         
-                        var anio = fechaBase.getFullYear();
-                        var mes = String(fechaBase.getMonth() + 1).padStart(2, '0');
-                        var dia = String(fechaBase.getDate()).padStart(2, '0');
-                        var hora = f.horaInicio.substring(0, 5);
-                        
-                        return {
-                            diaSemana: f.diaSemana,
-                            horaInicio: f.horaInicio,
-                            horaFin: f.horaFin,
-                            fechaHora: `${anio}-${mes}-${dia}T${hora}:00`
-                        };
-                    });
+                        data.franjas.forEach(function(f) {
+                            if (f.diaSemana === diaSemanaIteracion) {
+                                var anio = fechaIteracion.getFullYear();
+                                var mes = String(fechaIteracion.getMonth() + 1).padStart(2, '0');
+                                var dia = String(fechaIteracion.getDate()).padStart(2, '0');
+                                var hora = f.horaInicio.substring(0, 5);
+                                
+                                franjasData.push({
+                                    diaSemana: f.diaSemana,
+                                    horaInicio: f.horaInicio,
+                                    horaFin: f.horaFin,
+                                    fechaHora: `${anio}-${mes}-${dia}T${hora}:00`
+                                });
+                            }
+                        });
+                    }
+                    
+                    if (franjasData.length === 0) {
+                        listaFranjas.innerHTML = 'No hay horarios disponibles en las próximas 2 semanas.';
+                        listaFranjas.className = 'alert alert-warning';
+                        document.getElementById('FranjaId').innerHTML = '<option value="">-- No hay horarios --</option>';
+                        divFranjas.style.display = 'block';
+                        return;
+                    }
                     
                     var html = `<h5 class="mb-3">${data.medicoNombre}</h5>`;
                     
-                    var franjasPorDia = {};
-                    franjasData.forEach(function(f) {
-                        if (!franjasPorDia[f.diaSemana]) {
-                            franjasPorDia[f.diaSemana] = [];
-                        }
-                        franjasPorDia[f.diaSemana].push(f);
+                    var franjasOrdenadas = [...franjasData].sort(function(a, b) {
+                        return new Date(a.fechaHora) - new Date(b.fechaHora);
                     });
                     
-                    diasOrden = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-                    diasOrden.forEach(function(dia) {
-                        if (franjasPorDia[dia]) {
-                            html += `<div class="card mb-2">`;
-                            html += `<div class="card-header bg-primary text-white">${dia}</div>`;
-                            html += `<div class="card-body">`;
-                            html += `<div class="d-flex flex-wrap gap-2">`;
-                            franjasPorDia[dia].forEach(function(f) {
-                                var horaInicio = f.horaInicio.substring(0, 5);
-                                var horaFin = f.horaFin.substring(0, 5);
-                                html += `<span class="badge bg-success fs-6">${horaInicio} - ${horaFin}</span>`;
-                            });
-                            html += `</div></div></div>`;
+                    var franjasPorFecha = {};
+                    franjasOrdenadas.forEach(function(f) {
+                        var fechaKey = f.fechaHora.split('T')[0];
+                        if (!franjasPorFecha[fechaKey]) {
+                            franjasPorFecha[fechaKey] = [];
                         }
+                        franjasPorFecha[fechaKey].push(f);
+                    });
+                    
+                    Object.keys(franjasPorFecha).sort().forEach(function(fechaKey) {
+                        var fechaObj = new Date(franjasPorFecha[fechaKey][0].fechaHora);
+                        var fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                        var franjas = franjasPorFecha[fechaKey];
+                        
+                        html += `<div class="card mb-2">`;
+                        html += `<div class="card-header bg-primary text-white">${fechaStr}</div>`;
+                        html += `<div class="card-body">`;
+                        html += `<div class="d-flex flex-wrap gap-2">`;
+                        franjas.forEach(function(f) {
+                            var horaInicio = f.horaInicio.substring(0, 5);
+                            var horaFin = f.horaFin.substring(0, 5);
+                            html += `<span class="badge bg-success fs-6">${horaInicio} - ${horaFin}</span>`;
+                        });
+                        html += `</div></div></div>`;
                     });
                     
                     listaFranjas.innerHTML = html;

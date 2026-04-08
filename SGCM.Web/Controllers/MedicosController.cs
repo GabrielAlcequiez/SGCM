@@ -254,11 +254,6 @@ namespace SGCM.Web.Controllers
             try
             {
                 var token = GetToken();
-                if (string.IsNullOrEmpty(token))
-                {
-                    model.EspecialidadesDisponibles = new List<EspecialidadDropdownViewModel>();
-                    return View(model);
-                }
                 var especialidades = _especialidadesApiService.GetAllAsync(token).Result;
                 model.EspecialidadesDisponibles = especialidades.Select(e => new EspecialidadDropdownViewModel
                 {

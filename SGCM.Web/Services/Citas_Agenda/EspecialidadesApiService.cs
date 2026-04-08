@@ -11,9 +11,15 @@ namespace SGCM.Web.Services.Citas_Agenda
 
         public async Task<IReadOnlyList<EspecialidadesResponseDto>> GetAllAsync(string token)
         {
-            SetAuthorizationToken(token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                SetAuthorizationToken(token);
+            }
             var result = await GetAsync<IReadOnlyList<EspecialidadesResponseDto>>("api/Especialidades");
-            ClearAuthorizationToken();
+            if (!string.IsNullOrEmpty(token))
+            {
+                ClearAuthorizationToken();
+            }
             return result ?? new List<EspecialidadesResponseDto>();
         }
 

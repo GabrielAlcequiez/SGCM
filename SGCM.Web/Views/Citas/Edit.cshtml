@@ -8,7 +8,7 @@
 <h1>Editar Cita</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
             
@@ -17,7 +17,7 @@
 
             <div class="mb-3">
                 <label asp-for="MedicoId" class="form-label"></label>
-                <select asp-for="MedicoId" class="form-select">
+                <select asp-for="MedicoId" class="form-select" id="MedicoId">
                     <option value="">-- Seleccionar Médico --</option>
                     @foreach (var medico in Model.MedicosDisponibles)
                     {
@@ -27,11 +27,26 @@
                 <span asp-validation-for="MedicoId" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="FechaHora" class="form-label"></label>
-                <input asp-for="FechaHora" type="datetime-local" class="form-control" />
-                <span asp-validation-for="FechaHora" class="text-danger"></span>
+            <div class="mb-3" id="divFranjasHorarias" style="display:none;">
+                <label class="form-label fw-bold">Seleccione un horario disponible:</label>
+                <div id="listaFranjas" class="mb-3"></div>
+                
+                <select id="FranjaId" class="form-select">
+                    <option value="">-- Seleccionar horario --</option>
+                </select>
             </div>
+
+            <div class="mb-3" id="divCitaSeleccionada" style="display:none;">
+                <div class="alert alert-success d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>✓ Cita seleccionada:</strong> 
+                        <span id="txtCitaSeleccionada"></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="cambiarFranja()">Cambiar</button>
+                </div>
+            </div>
+
+            <input type="hidden" asp-for="FechaHora" id="FechaHora" />
 
             <div class="mb-3">
                 <label asp-for="Motivo" class="form-label"></label>
@@ -40,7 +55,7 @@
             </div>
 
             <div class="mb-3">
-                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-primary" id="btnGuardar" />
             </div>
         </form>
     </div>
@@ -52,4 +67,174 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var franjasData = [];
+        
+        function cambiarFranja() {
+            document.getElementById('divCitaSeleccionada').style.display = 'none';
+            document.getElementById('FechaHora').value = '';
+            cargarDropdown();
+        }
+
+        function cargarDropdown() {
+            var selectFranja = document.getElementById('FranjaId');
+            selectFranja.innerHTML = '<option value="">-- Seleccionar horario --</option>';
+            
+            franjasData.forEach(function(f) {
+                var fechaObj = new Date(f.fechaHora);
+                var fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+                var horaInicio = f.horaInicio.substring(0, 5);
+                var horaFin = f.horaFin.substring(0, 5);
+                var option = document.createElement('option');
+                option.value = f.fechaHora;
+                option.textContent = `${fechaStr} ${horaInicio} - ${horaFin}`;
+                selectFranja.appendChild(option);
+            });
+        }
+
+        document.getElementById('MedicoId').addEventListener('change', async function() {
+            var medicoId = this.value;
+            var divFranjas = document.getElementById('divFranjasHorarias');
+            var listaFranjas = document.getElementById('listaFranjas');
+            
+            document.getElementById('divCitaSeleccionada').style.display = 'none';
+            document.getElementById('FechaHora').value = '';
+            
+            if (!medicoId) {
+                divFranjas.style.display = 'none';
+                document.getElementById('FranjaId').innerHTML = '<option value="">-- Seleccionar horario --</option>';
+                return;
+            }
+            
+            try {
+                var response = await fetch(`/Citas/ObtenerFranjasDisponibles?medicoId=${medicoId}`);
+                var data = await response.json();
+                
+                if (data.error) {
+                    listaFranjas.innerHTML = data.error;
+                    listaFranjas.className = 'alert alert-warning';
+                    divFranjas.style.display = 'block';
+                    return;
+                }
+                
+                if (data.franjas && data.franjas.length > 0) {
+                    franjasData = [];
+                    var diasAMostrar = 14; // 2 semanas
+                    var fechaActual = new Date();
+
+                    for (var i = 0; i < diasAMostrar; i++) {
+                        var fechaIteracion = new Date(fechaActual);
+                        fechaIteracion.setDate(fechaActual.getDate() + i);
+                        
+                        var diaSemanaIteracion = obtenerDiaSemana(fechaIteracion.getDay());
+                        
+                        data.franjas.forEach(function(f) {
+                            if (f.diaSemana === diaSemanaIteracion) {
+                                var anio = fechaIteracion.getFullYear();
+                                var mes = String(fechaIteracion.getMonth() + 1).padStart(2, '0');
+                                var dia = String(fechaIteracion.getDate()).padStart(2, '0');
+                                var hora = f.horaInicio.substring(0, 5);
+                                
+                                franjasData.push({
+                                    diaSemana: f.diaSemana,
+                                    horaInicio: f.horaInicio,
+                                    horaFin: f.horaFin,
+                                    fechaHora: `${anio}-${mes}-${dia}T${hora}:00`
+                                });
+                            }
+                        });
+                    }
+                    
+                    if (franjasData.length === 0) {
+                        listaFranjas.innerHTML = 'No hay horarios disponibles en las próximas 2 semanas.';
+                        listaFranjas.className = 'alert alert-warning';
+                        document.getElementById('FranjaId').innerHTML = '<option value="">-- No hay horarios --</option>';
+                        divFranjas.style.display = 'block';
+                        return;
+                    }
+                    
+                    var html = `<h5 class="mb-3">${data.medicoNombre}</h5>`;
+                    
+                    var franjasOrdenadas = [...franjasData].sort(function(a, b) {
+                        return new Date(a.fechaHora) - new Date(b.fechaHora);
+                    });
+                    
+                    var franjasPorFecha = {};
+                    franjasOrdenadas.forEach(function(f) {
+                        var fechaKey = f.fechaHora.split('T')[0];
+                        if (!franjasPorFecha[fechaKey]) {
+                            franjasPorFecha[fechaKey] = [];
+                        }
+                        franjasPorFecha[fechaKey].push(f);
+                    });
+                    
+                    Object.keys(franjasPorFecha).sort().forEach(function(fechaKey) {
+                        var fechaObj = new Date(franjasPorFecha[fechaKey][0].fechaHora);
+                        var fechaStr = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                        var franjas = franjasPorFecha[fechaKey];
+                        
+                        html += `<div class="card mb-2">`;
+                        html += `<div class="card-header bg-primary text-white">${fechaStr}</div>`;
+                        html += `<div class="card-body">`;
+                        html += `<div class="d-flex flex-wrap gap-2">`;
+                        franjas.forEach(function(f) {
+                            var horaInicio = f.horaInicio.substring(0, 5);
+                            var horaFin = f.horaFin.substring(0, 5);
+                            html += `<span class="badge bg-success fs-6">${horaInicio} - ${horaFin}</span>`;
+                        });
+                        html += `</div></div></div>`;
+                    });
+                    
+                    listaFranjas.innerHTML = html;
+                    listaFranjas.className = '';
+                    cargarDropdown();
+                } else {
+                    listaFranjas.innerHTML = 'No hay horarios disponibles para este médico en los próximos 30 días.';
+                    listaFranjas.className = 'alert alert-warning';
+                    document.getElementById('FranjaId').innerHTML = '<option value="">-- No hay horarios --</option>';
+                }
+                divFranjas.style.display = 'block';
+            } catch (e) {
+                listaFranjas.innerHTML = 'Error al cargar las disponibilidades.';
+                listaFranjas.className = 'alert alert-danger';
+                divFranjas.style.display = 'block';
+            }
+        });
+
+        function obtenerDiaSemana(dia) {
+            var dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            return dias[dia];
+        }
+
+        document.getElementById('FranjaId').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var fechaHora = selectedOption.value;
+            var textoFrancha = selectedOption.text;
+            
+            if (!fechaHora) return;
+            
+            document.getElementById('divCitaSeleccionada').style.display = 'block';
+            document.getElementById('txtCitaSeleccionada').innerText = textoFrancha;
+            document.getElementById('FechaHora').value = fechaHora;
+            
+            selectedOption.disabled = true;
+            selectedOption.text = textoFrancha + ' (seleccionada)';
+            this.value = '';
+        });
+
+        // Cargar franjas del médico actual al iniciar
+        window.addEventListener('DOMContentLoaded', function() {
+            var medicoIdActual = document.getElementById('MedicoId').value;
+            if (medicoIdActual) {
+                var evento = new Event('change');
+                document.getElementById('MedicoId').dispatchEvent(evento);
+            }
+            
+            // Preserve the original date if no selection is made
+            var fechaOriginal = '@Model.FechaHora.ToString("yyyy-MM-ddTHH:mm")';
+            if (fechaOriginal && fechaOriginal !== '') {
+                document.getElementById('FechaHora').value = fechaOriginal;
+            }
+        });
+    </script>
 }

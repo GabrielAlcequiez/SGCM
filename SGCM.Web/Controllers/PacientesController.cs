@@ -263,11 +263,6 @@ namespace SGCM.Web.Controllers
             try
             {
                 var token = GetToken();
-                if (string.IsNullOrEmpty(token))
-                {
-                    model.ProveedoresDisponibles = new List<ProveedorDropdownViewModel>();
-                    return View(model);
-                }
                 var proveedores = _proveedoresApiService.GetAllAsync(token).Result;
                 model.ProveedoresDisponibles = proveedores.Select(p => new ProveedorDropdownViewModel
                 {

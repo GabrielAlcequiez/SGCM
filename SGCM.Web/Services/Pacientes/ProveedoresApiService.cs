@@ -11,9 +11,15 @@ namespace SGCM.Web.Services.Pacientes
 
         public async Task<IReadOnlyList<ProveedoresResponseDto>> GetAllAsync(string token)
         {
-            SetAuthorizationToken(token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                SetAuthorizationToken(token);
+            }
             var result = await GetAsync<IReadOnlyList<ProveedoresResponseDto>>("api/Proveedores");
-            ClearAuthorizationToken();
+            if (!string.IsNullOrEmpty(token))
+            {
+                ClearAuthorizationToken();
+            }
             return result ?? new List<ProveedoresResponseDto>();
         }
 
